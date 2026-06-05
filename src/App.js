@@ -36,6 +36,40 @@ const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 1.75 }) =
   );
 };
 
+// ── Motivational Quotes ───────────────────────────────────────────────────────
+const QUOTES = [
+  { text: "Go to the f**king gym.", author: "David Goggins" },
+  { text: "Who's gonna carry the boats?", author: "David Goggins" },
+  { text: "You can't cheat the grind.", author: "David Goggins" },
+  { text: "Stay hard.", author: "David Goggins" },
+  { text: "Don't stop when you're tired. Stop when you're done.", author: "David Goggins" },
+  { text: "Suffer now and live the rest of your life as a champion.", author: "Muhammad Ali" },
+  { text: "The only bad workout is the one that didn't happen.", author: "Unknown" },
+  { text: "You didn't wake up to be mediocre.", author: "Unknown" },
+  { text: "Your future self is watching you right now.", author: "Unknown" },
+  { text: "Make yourself proud.", author: "Unknown" },
+  { text: "It never gets easier, you just get better.", author: "Unknown" },
+  { text: "Pain is temporary. Quitting lasts forever.", author: "Lance Armstrong" },
+  { text: "Get comfortable being uncomfortable.", author: "Jocko Willink" },
+  { text: "Discipline equals freedom.", author: "Jocko Willink" },
+  { text: "The only easy day was yesterday.", author: "US Navy SEALs" },
+  { text: "Do something today your future self will thank you for.", author: "Unknown" },
+  { text: "The clock is ticking. Are you becoming the person you want to be?", author: "Greg Plitt" },
+  { text: "No one is coming to save you. Get up.", author: "Unknown" },
+  { text: "Be the dad your kids think you are.", author: "Unknown" },
+  { text: "Your kids are watching. Show them how it's done.", author: "Unknown" },
+];
+
+function QuoteBanner() {
+  const q = QUOTES[Math.floor((Date.now() / 86400000)) % QUOTES.length]; // changes daily
+  return (
+    <div style={{ background: "var(--surface)", borderRadius: 14, padding: "14px 16px", marginBottom: 12, border: "1px solid var(--border)", borderLeft: `3px solid ${ACCENT}` }}>
+      <div style={{ fontSize: 14, fontWeight: 600, lineHeight: 1.5, color: "var(--text)" }}>"{q.text}"</div>
+      <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 1.5, color: "var(--muted)", marginTop: 6 }}>— {q.author.toUpperCase()}</div>
+    </div>
+  );
+}
+
 // ── Workout Data ───────────────────────────────────────────────────────────────
 const DAYS = [
   { day: "Monday", short: "MON", type: "workout", label: "Upper Body", time: "6:00 – 6:25am", tag: "STRENGTH", accentIdx: 0,
@@ -317,6 +351,7 @@ export default function App() {
   const [notifPerm, setNotifPerm] = useState(Notification?.permission || "default");
   const [notifTime, setNotifTime] = useState(() => store.get("notifTime", "05:55"));
   const [notifEnabled, setNotifEnabled] = useState(() => store.get("notifEnabled", false));
+  const [waterEnabled, setWaterEnabled] = useState(() => store.get("waterEnabled", false));
   const [editingProfile, setEditingProfile] = useState(false);
 
   const todaySchedIdx = dayIdxToSchedule(new Date().getDay());
@@ -356,23 +391,87 @@ export default function App() {
     setCompletedDays(u); store.set("completedDays", u);
   }, [completedDays, todayK]);
 
+  const MISSED_QUOTES = [
+    { t: "You missed yesterday.", b: `No excuses, ${profile?.name || "Dad"}. Get back on it today.` },
+    { t: "The gym didn't miss you.", b: "But your future self did. Don't skip again." },
+    { t: "Yesterday you said tomorrow.", b: "Today IS tomorrow. Go to the f**king gym." },
+    { t: "Missed a day.", b: "That's fine. Missing two is a choice. Don't." },
+    { t: "Your kids are watching.", b: "Show them what consistency looks like." },
+  ];
+
+  const WATER_MSGS = [
+    { t: "Morning hydration", b: "Start the day right — drink a full glass of water now." },
+    { t: "Midday water check", b: "Halfway through the day. How's your water intake? Aim for 1.5L by now." },
+    { t: "Evening water reminder", b: "Don't forget to finish your 2–3L today. Almost there." },
+  ];
+
   const scheduleNotif = useCallback((timeStr) => {
     const [h, m] = timeStr.split(":").map(Number);
     const delay = msUntil(h, m);
     const sd = DAYS[dayIdxToSchedule(new Date().getDay())];
     const isW = sd.type === "workout";
-    fireNotif(isW ? `Time to train, ${profile?.name || "Dad"}!` : "Active rest day", isW ? `${sd.label} — 25 mins. Get it done.` : "A short walk keeps the momentum going.");
+    fireNotif(
+      isW ? `Time to train, ${profile?.name || "Dad"}!` : "Active rest day",
+      isW ? `${sd.label} — 25 mins. Get it done.` : "A short walk keeps the momentum going."
+    );
     setTimeout(() => scheduleNotif(timeStr), delay + 1000);
   }, [profile]);
+
+  // Missed workout check — fires at 8pm if a workout day wasn't completed
+  const scheduleMissedCheck = useCallback(() => {
+    const delay = msUntil(20, 0);
+    setTimeout(() => {
+      const now = new Date();
+      const sd = DAYS[dayIdxToSchedule(now.getDay())];
+      const k = now.toISOString().slice(0, 10);
+      if (sd.type === "workout" && !store.get("completedDays", {})[k]) {
+        const q = MISSED_QUOTES[Math.floor(Math.random() * MISSED_QUOTES.length)];
+        fireNotif(q.t, q.b);
+      }
+      scheduleMissedCheck();
+    }, delay + 1000);
+  }, [profile]); // eslint-disable-line
+
+  // Water reminders — 7am, 12:30pm, 7pm
+  const scheduleWaterReminders = useCallback(() => {
+    [[7, 0], [12, 30], [19, 0]].forEach(([ h, m], i) => {
+      const schedNext = () => {
+        const delay = msUntil(h, m);
+        setTimeout(() => {
+          fireNotif(WATER_MSGS[i].t, WATER_MSGS[i].b);
+          schedNext();
+        }, delay + 1000);
+      };
+      schedNext();
+    });
+  }, []);
 
   const enableNotifs = async () => {
     const p = await requestNotifPerm();
     setNotifPerm(p);
-    if (p === "granted") { setNotifEnabled(true); store.set("notifEnabled", true); scheduleNotif(notifTime); }
+    if (p === "granted") {
+      setNotifEnabled(true); store.set("notifEnabled", true);
+      scheduleNotif(notifTime);
+      scheduleMissedCheck();
+    }
+  };
+
+  const toggleWater = async () => {
+    if (notifPerm !== "granted") {
+      const p = await requestNotifPerm();
+      setNotifPerm(p);
+      if (p !== "granted") return;
+    }
+    const next = !waterEnabled;
+    setWaterEnabled(next); store.set("waterEnabled", next);
+    if (next) scheduleWaterReminders();
   };
 
   useEffect(() => {
-    if (notifEnabled && notifPerm === "granted") scheduleNotif(notifTime);
+    if (notifPerm === "granted") {
+      if (notifEnabled) { scheduleNotif(notifTime); scheduleMissedCheck(); }
+      if (waterEnabled) scheduleWaterReminders();
+    }
   }, []); // eslint-disable-line
 
   const addWeight = () => {
@@ -466,6 +565,7 @@ export default function App() {
           {/* TODAY */}
           {tab === "today" && (
             <div>
+              <QuoteBanner />
               <div style={{ background: "var(--surface)", borderRadius: 16, padding: 20, marginBottom: 12, border: "1px solid var(--border)", position: "relative", overflow: "hidden" }}>
                 <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: ACCENTS[todayData.accentIdx] }} />
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
@@ -773,19 +873,51 @@ export default function App() {
                   <>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: 14 }}>Reminder time</div>
+                        <div style={{ fontWeight: 600, fontSize: 14 }}>Morning reminder</div>
                         <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>Set 5 min before you want to start</div>
                       </div>
                       <input type="time" value={notifTime} onChange={e => { setNotifTime(e.target.value); store.set("notifTime", e.target.value); }}
                         style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--text)", fontSize: 14, outline: "none", fontFamily: "var(--mono)" }} />
                     </div>
                     <button onClick={notifEnabled ? () => { setNotifEnabled(false); store.set("notifEnabled", false); } : enableNotifs}
-                      style={{ width: "100%", padding: "13px", borderRadius: 12, border: notifEnabled ? "1px solid var(--border)" : "none", background: notifEnabled ? "var(--surface2)" : "var(--accent)", color: notifEnabled ? "var(--muted)" : "#000", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                      style={{ width: "100%", padding: "13px", borderRadius: 12, border: notifEnabled ? "1px solid var(--border)" : "none", background: notifEnabled ? "var(--surface2)" : "var(--accent)", color: notifEnabled ? "var(--muted)" : "#000", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 8 }}>
                       <Icon name="bell" size={15} color={notifEnabled ? "var(--muted)" : "#000"} />
-                      {notifEnabled ? `ON · ${notifTime} — TAP TO DISABLE` : "ENABLE REMINDERS"}
+                      {notifEnabled ? `ON · ${notifTime} — TAP TO DISABLE` : "ENABLE WORKOUT REMINDERS"}
                     </button>
+                    {notifEnabled && (
+                      <div style={{ padding: "10px 14px", background: "var(--surface2)", borderRadius: 10, fontSize: 12, color: "var(--muted)" }}>
+                        Also fires at 8pm if you missed a workout day — with a motivational kick up the backside.
+                      </div>
+                    )}
                   </>
                 )}
+              </div>
+
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <Icon name="zap" size={18} color="#00D4FF" />
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)" }}>WATER REMINDERS</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
+                  {[
+                    { time: "7:00am", label: "Morning", note: "Start the day hydrated" },
+                    { time: "12:30pm", label: "Midday", note: "Check your intake halfway" },
+                    { time: "7:00pm", label: "Evening", note: "Finish your daily 2–3L" },
+                  ].map(w => (
+                    <div key={w.time} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", background: "var(--surface2)", borderRadius: 10 }}>
+                      <div>
+                        <span style={{ fontWeight: 600, fontSize: 13 }}>{w.label}</span>
+                        <span style={{ fontSize: 12, color: "var(--muted)", marginLeft: 8 }}>{w.note}</span>
+                      </div>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "#00D4FF" }}>{w.time}</span>
+                    </div>
+                  ))}
+                </div>
+                <button onClick={toggleWater}
+                  style={{ width: "100%", padding: "13px", borderRadius: 12, border: waterEnabled ? "1px solid var(--border)" : "none", background: waterEnabled ? "var(--surface2)" : "#00D4FF20", color: waterEnabled ? "var(--muted)" : "#00D4FF", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: waterEnabled ? "1px solid var(--border)" : "1px solid #00D4FF40" }}>
+                  <Icon name="zap" size={15} color={waterEnabled ? "var(--muted)" : "#00D4FF"} />
+                  {waterEnabled ? "WATER REMINDERS ON — TAP TO DISABLE" : "ENABLE WATER REMINDERS"}
+                </button>
               </div>
 
               <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
