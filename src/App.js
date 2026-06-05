@@ -353,6 +353,56 @@ export default function App() {
   const [notifEnabled, setNotifEnabled] = useState(() => store.get("notifEnabled", false));
   const [waterEnabled, setWaterEnabled] = useState(() => store.get("waterEnabled", false));
   const [editingProfile, setEditingProfile] = useState(false);
+  const [importText, setImportText] = useState("");
+  const [importError, setImportError] = useState("");
+  const [importSuccess, setImportSuccess] = useState(false);
+
+  const exportData = () => {
+    const data = {
+      v: 1,
+      profile: store.get("profile"),
+      completedDays: store.get("completedDays", {}),
+      weights: store.get("weights", []),
+      notifTime: store.get("notifTime", "05:55"),
+      notifEnabled: store.get("notifEnabled", false),
+      waterEnabled: store.get("waterEnabled", false),
+      exportedAt: new Date().toISOString(),
+    };
+    const str = btoa(JSON.stringify(data));
+    // Copy to clipboard
+    navigator.clipboard?.writeText(str).then(() => {
+      alert("Backup code copied to clipboard!\n\nSave it somewhere safe (Notes app, email to yourself). Paste it into the Import field on your new install to restore everything.");
+    }).catch(() => {
+      // Fallback: show it
+      prompt("Copy this backup code:", str);
+    });
+  };
+
+  const importData = () => {
+    setImportError("");
+    setImportSuccess(false);
+    try {
+      const data = JSON.parse(atob(importText.trim()));
+      if (!data.v || !data.profile) throw new Error("Invalid backup code");
+      if (data.profile) store.set("profile", data.profile);
+      if (data.completedDays) store.set("completedDays", data.completedDays);
+      if (data.weights) store.set("weights", data.weights);
+      if (data.notifTime) store.set("notifTime", data.notifTime);
+      store.set("notifEnabled", data.notifEnabled || false);
+      store.set("waterEnabled", data.waterEnabled || false);
+      // Reload state
+      setProfile(data.profile);
+      setCompletedDays(data.completedDays || {});
+      setWeights(data.weights || []);
+      setNotifTime(data.notifTime || "05:55");
+      setNotifEnabled(data.notifEnabled || false);
+      setWaterEnabled(data.waterEnabled || false);
+      setImportText("");
+      setImportSuccess(true);
+    } catch {
+      setImportError("Invalid backup code. Make sure you pasted the full code.");
+    }
+  };
 
   const todaySchedIdx = dayIdxToSchedule(new Date().getDay());
   const todayData = DAYS[todaySchedIdx];
@@ -917,6 +967,32 @@ export default function App() {
                   style={{ width: "100%", padding: "13px", borderRadius: 12, border: waterEnabled ? "1px solid var(--border)" : "none", background: waterEnabled ? "var(--surface2)" : "#00D4FF20", color: waterEnabled ? "var(--muted)" : "#00D4FF", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: waterEnabled ? "1px solid var(--border)" : "1px solid #00D4FF40" }}>
                   <Icon name="zap" size={15} color={waterEnabled ? "var(--muted)" : "#00D4FF"} />
                   {waterEnabled ? "WATER REMINDERS ON — TAP TO DISABLE" : "ENABLE WATER REMINDERS"}
+                </button>
+              </div>
+
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <Icon name="phone" size={18} color="var(--accent)" />
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)" }}>BACKUP & RESTORE</div>
+                </div>
+                <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, marginBottom: 14 }}>
+                  Export a backup code to save your progress. Paste it on any new install to restore everything — streaks, weights, profile.
+                </p>
+                <button onClick={exportData} style={{ width: "100%", padding: "13px", borderRadius: 12, border: "none", background: "var(--accent)", color: "#000", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 700, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 14 }}>
+                  <Icon name="plus" size={15} color="#000" strokeWidth={2.5} /> EXPORT BACKUP CODE
+                </button>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 8 }}>RESTORE FROM BACKUP</div>
+                <textarea
+                  value={importText}
+                  onChange={e => { setImportText(e.target.value); setImportError(""); setImportSuccess(false); }}
+                  placeholder="Paste your backup code here..."
+                  rows={3}
+                  style={{ width: "100%", padding: "12px 14px", borderRadius: 10, border: `1px solid ${importError ? "#FF3B6B" : "var(--border)"}`, background: "var(--surface2)", color: "var(--text)", fontSize: 13, outline: "none", fontFamily: "var(--mono)", resize: "none", lineBreak: "anywhere" }}
+                />
+                {importError && <div style={{ fontSize: 12, color: "#FF6B6B", marginTop: 6 }}>{importError}</div>}
+                {importSuccess && <div style={{ fontSize: 12, color: "var(--accent)", marginTop: 6 }}>✓ Data restored successfully!</div>}
+                <button onClick={importData} disabled={!importText.trim()} style={{ width: "100%", marginTop: 10, padding: "12px", borderRadius: 12, border: "1px solid var(--border)", background: importText.trim() ? "var(--surface2)" : "transparent", color: importText.trim() ? "var(--text)" : "var(--muted)", cursor: importText.trim() ? "pointer" : "default", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>
+                  RESTORE DATA
                 </button>
               </div>
 
