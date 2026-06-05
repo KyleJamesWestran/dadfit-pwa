@@ -1,5 +1,5 @@
 {
-  "name": "dad-fitness-pwa",
+  "name": "dadfit-pwa",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -20,9 +20,5 @@
     "development": [
       "last 1 chrome version"
     ]
-  },
-  "homepage": ".",
-  "devDependencies": {
-    "html-inline": "^1.2.0"
   }
 }
