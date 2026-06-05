@@ -1,5 +1,5 @@
 {
-  "name": "dadfit-pwa",
+  "name": "dad-fitness-pwa",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false react-scripts build"
+    "build": "react-scripts build"
   },
   "browserslist": {
     "production": [
