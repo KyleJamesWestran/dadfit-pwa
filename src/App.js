@@ -1,11 +1,42 @@
 import { useState, useEffect, useCallback } from "react";
 
-// ─── DATA ────────────────────────────────────────────────────────────────────
+// ── Google Fonts ──────────────────────────────────────────────────────────────
+const fontLink = document.createElement("link");
+fontLink.rel = "stylesheet";
+fontLink.href = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap";
+document.head.appendChild(fontLink);
 
+// ── SVG Icons ─────────────────────────────────────────────────────────────────
+const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 1.75 }) => {
+  const paths = {
+    today: <><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></>,
+    schedule: <><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></>,
+    meals: <><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></>,
+    progress: <><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></>,
+    settings: <><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></>,
+    check: <polyline points="20 6 9 17 4 12"/>,
+    chevronDown: <polyline points="6 9 12 15 18 9"/>,
+    chevronUp: <polyline points="18 15 12 9 6 15"/>,
+    flame: <><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></>,
+    weight: <><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></>,
+    bell: <><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></>,
+    zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+    trophy: <><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></>,
+    plus: <><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></>,
+    trash: <><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></>,
+    phone: <><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></>,
+    refresh: <><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      {paths[name]}
+    </svg>
+  );
+};
+
+// ── Data ──────────────────────────────────────────────────────────────────────
 const DAYS = [
-  {
-    day: "Monday", short: "MON", type: "workout", label: "Upper Body",
-    time: "6:00–6:25am", tag: "STRENGTH", color: "#e8f5e9", accent: "#2e7d32",
+  { day: "Monday", short: "MON", type: "workout", label: "Upper Body", time: "6:00 – 6:25am", tag: "STRENGTH", accentIdx: 0,
     warmup: "3 min — arm circles, shoulder rolls, jumping jacks",
     cooldown: "2 min — chest stretch, band pull-apart",
     exercises: [
@@ -16,14 +47,10 @@ const DAYS = [
       { name: "Tricep Band Pushdowns", sets: "3 × 12", note: "" },
     ],
   },
-  {
-    day: "Tuesday", short: "TUE", type: "rest", label: "Rest / Walk",
-    time: "Lunchtime if possible", tag: "ACTIVE REST", color: "#fafafa", accent: "#9e9e9e",
-    note: "10–15 min walk at lunch. Drink extra water. No pressure.",
+  { day: "Tuesday", short: "TUE", type: "rest", label: "Active Rest", time: "Lunch walk", tag: "REST", accentIdx: 1,
+    note: "10–15 min walk at lunch. Drink extra water.",
   },
-  {
-    day: "Wednesday", short: "WED", type: "workout", label: "Lower Body",
-    time: "6:00–6:25am", tag: "STRENGTH", color: "#e3f2fd", accent: "#1565c0",
+  { day: "Wednesday", short: "WED", type: "workout", label: "Lower Body", time: "6:00 – 6:25am", tag: "STRENGTH", accentIdx: 0,
     warmup: "3 min — leg swings, hip circles, bodyweight squats",
     cooldown: "2 min — hip flexor stretch, hamstring stretch",
     exercises: [
@@ -34,14 +61,10 @@ const DAYS = [
       { name: "Band Lateral Walks", sets: "3 × 12 each way", note: "Band around ankles" },
     ],
   },
-  {
-    day: "Thursday", short: "THU", type: "rest", label: "Rest Day",
-    time: "Full recovery", tag: "REST", color: "#fafafa", accent: "#9e9e9e",
-    note: "Your muscles grow on rest days. Prioritise sleep if the kids allow it!",
+  { day: "Thursday", short: "THU", type: "rest", label: "Rest Day", time: "Full recovery", tag: "REST", accentIdx: 1,
+    note: "Muscles grow on rest days. Prioritise sleep.",
   },
-  {
-    day: "Friday", short: "FRI", type: "workout", label: "Full Body Circuit",
-    time: "6:00–6:25am", tag: "CIRCUIT", color: "#fce4ec", accent: "#b71c1c",
+  { day: "Friday", short: "FRI", type: "workout", label: "Full Body", time: "6:00 – 6:25am", tag: "CIRCUIT", accentIdx: 2,
     warmup: "3 min — light jog in place, full body circles",
     cooldown: "2 min — child's pose, deep breathing",
     exercises: [
@@ -52,9 +75,7 @@ const DAYS = [
       { name: "Renegade Row", sets: "3 × 8 each", note: "Plank position, row each arm" },
     ],
   },
-  {
-    day: "Saturday", short: "SAT", type: "workout", label: "Family Walk + Core",
-    time: "Morning with the boys", tag: "CARDIO", color: "#fff8e1", accent: "#e65100",
+  { day: "Saturday", short: "SAT", type: "workout", label: "Family Walk + Core", time: "Morning with the boys", tag: "CARDIO", accentIdx: 3,
     warmup: "The walk IS the warmup",
     cooldown: "2 min — lower back stretch, seated twist",
     exercises: [
@@ -64,821 +85,606 @@ const DAYS = [
       { name: "Russian Twists", sets: "3 × 15", note: "Light weight, focus on rotation" },
     ],
   },
-  {
-    day: "Sunday", short: "SUN", type: "rest", label: "Full Rest",
-    time: "Family day", tag: "REST", color: "#fafafa", accent: "#9e9e9e",
-    note: "Recharge. Church, family time, a good meal. You earned it.",
+  { day: "Sunday", short: "SUN", type: "rest", label: "Full Rest", time: "Family day", tag: "REST", accentIdx: 1,
+    note: "Recharge. Church, family time, a good meal.",
   },
 ];
 
 const MEALS = [
-  {
-    meal: "Breakfast", icon: "🌅", calories: "~400–500 kcal",
-    goal: "High protein, quick to make",
-    ideas: ["3 scrambled eggs + 1 slice wholegrain toast", "Greek yoghurt + banana + handful of nuts", "Oats with protein powder + berries"],
-    avoid: "Cereal, muesli bars, toast with jam only",
-  },
-  {
-    meal: "Morning Tea", icon: "☕", calories: "~150–200 kcal",
-    goal: "Keep hunger at bay",
-    ideas: ["Apple + small handful of almonds", "Boiled egg + rice crackers", "Black coffee or tea (no sugar)"],
-    avoid: "Biscuits, chips, sugary drinks",
-  },
-  {
-    meal: "Lunch", icon: "🥗", calories: "~500–600 kcal",
-    goal: "Big, filling, protein-forward",
-    ideas: ["Chicken + brown rice + salad (batch cook Sunday)", "Tuna wrap with spinach, tomato, no mayo", "Leftovers from last night's dinner"],
-    avoid: "Meal deals with chips, white bread sandwiches",
-  },
-  {
-    meal: "Afternoon Tea", icon: "🍎", calories: "~150–200 kcal",
-    goal: "Bridge to dinner without overdoing it",
-    ideas: ["Piece of fruit", "Hummus + veggie sticks", "Small protein shake if you trained that morning"],
-    avoid: "Don't skip — you'll overeat at dinner",
-  },
-  {
-    meal: "Dinner", icon: "🍽️", calories: "~600–700 kcal",
-    goal: "Family meal — just watch portions",
-    ideas: ["Protein + lots of veggies + small serve of carbs", "Stir-fry with lean meat over brown rice", "Bolognese with lentils mixed in — less mince, more veg"],
-    avoid: "Seconds, eating the kids' leftovers, large desserts daily",
-  },
+  { meal: "Breakfast", time: "7:00am", cal: "400–500 kcal", goal: "High protein, quick prep",
+    ideas: ["3 scrambled eggs + wholegrain toast", "Greek yoghurt + banana + almonds", "Oats with protein powder + berries"],
+    avoid: "Cereal, muesli bars, toast with jam only" },
+  { meal: "Morning Tea", time: "10:00am", cal: "150–200 kcal", goal: "Keep hunger at bay",
+    ideas: ["Apple + small handful of almonds", "Boiled egg + rice crackers", "Black coffee or tea"],
+    avoid: "Biscuits, chips, sugary drinks" },
+  { meal: "Lunch", time: "12:30pm", cal: "500–600 kcal", goal: "Big, filling, protein-forward",
+    ideas: ["Chicken + brown rice + salad", "Tuna wrap with spinach + tomato", "Last night's leftovers"],
+    avoid: "Meal deals with chips, white bread" },
+  { meal: "Afternoon Tea", time: "3:30pm", cal: "150–200 kcal", goal: "Bridge to dinner",
+    ideas: ["Piece of fruit", "Hummus + veggie sticks", "Protein shake if you trained"],
+    avoid: "Don't skip — you'll overeat at dinner" },
+  { meal: "Dinner", time: "6:00pm", cal: "600–700 kcal", goal: "Family meal, watch portions",
+    ideas: ["Protein + lots of veggies + small carbs", "Stir-fry with lean meat over brown rice", "Bolognese with lentils — less mince, more veg"],
+    avoid: "Seconds, kids' leftovers, large desserts" },
 ];
 
 const TIPS = [
-  { icon: "💧", text: "Drink 2–3L of water daily. Thirst often masks as hunger." },
-  { icon: "😴", text: "Sleep is your secret weapon. Poor sleep spikes hunger hormones." },
-  { icon: "📦", text: "Batch cook on Sunday — chicken breasts, rice, boiled eggs." },
-  { icon: "🚫", text: "Cut sugary drinks entirely — Coke, juice, cordial, energy drinks." },
-  { icon: "⚖️", text: "Weigh yourself once a week, same morning, same conditions." },
-  { icon: "🏃", text: "If the kids wake early, even 15 min is better than nothing." },
+  { icon: "weight", text: "Drink 2–3L of water daily. Thirst often masks as hunger." },
+  { icon: "zap", text: "Sleep is your secret weapon. Poor sleep spikes hunger hormones." },
+  { icon: "schedule", text: "Batch cook Sunday — chicken, rice, boiled eggs for the week." },
+  { icon: "trash", text: "Cut sugary drinks entirely — Coke, juice, cordial, energy drinks." },
+  { icon: "weight", text: "Weigh yourself once a week, same morning, same conditions." },
+  { icon: "flame", text: "If kids wake early, even 15 min is better than nothing." },
 ];
 
-// ─── STORAGE HELPERS ────────────────────────────────────────────────────────
+// ── Accent palette (no emojis) ────────────────────────────────────────────────
+const ACCENTS = ["#C8FF00", "#FF6B35", "#00D4FF", "#FF3B6B"];
+const ACCENT = "#C8FF00"; // primary lime
 
-const storage = {
-  get: (key, fallback = null) => {
-    try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; }
-    catch { return fallback; }
-  },
-  set: (key, val) => { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} },
+// ── Storage ───────────────────────────────────────────────────────────────────
+const store = {
+  get: (k, fb = null) => { try { const v = localStorage.getItem(k); return v !== null ? JSON.parse(v) : fb; } catch { return fb; } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
 };
 
-function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+function dayIdxToSchedule(jsDay) { return jsDay === 0 ? 6 : jsDay - 1; }
+function msUntil(h, m) {
+  const now = new Date(), t = new Date();
+  t.setHours(h, m, 0, 0);
+  if (t <= now) t.setDate(t.getDate() + 1);
+  return t - now;
 }
 
-function getTodayDayIndex() {
-  return new Date().getDay(); // 0=Sun,1=Mon,...
-}
-
-function dayIndexToScheduleIndex(jsDay) {
-  // Mon=0...Sun=6 in our DAYS array
-  return jsDay === 0 ? 6 : jsDay - 1;
-}
-
-// ─── NOTIFICATION HELPER ────────────────────────────────────────────────────
-
-async function requestNotificationPermission() {
+async function requestNotifPerm() {
   if (!("Notification" in window)) return "unsupported";
   if (Notification.permission === "granted") return "granted";
-  const perm = await Notification.requestPermission();
-  return perm;
+  return await Notification.requestPermission();
 }
 
-function scheduleLocalNotification(title, body, delayMs) {
-  // Uses setTimeout + Notification API (works without push server)
+function fireNotif(title, body) {
   if (Notification.permission !== "granted") return;
-  setTimeout(() => {
-    try {
-      if (navigator.serviceWorker.controller) {
-        navigator.serviceWorker.ready.then(reg => {
-          reg.showNotification(title, {
-            body,
-            icon: "/icon-192.png",
-            badge: "/icon-192.png",
-            vibrate: [200, 100, 200],
-            tag: "dadfit-workout",
-            renotify: true,
-          });
-        });
-      } else {
-        new Notification(title, { body, icon: "/icon-192.png" });
-      }
-    } catch {}
-  }, delayMs);
+  navigator.serviceWorker?.ready.then(reg => {
+    reg.showNotification(title, { body, icon: "/icon-192.png", vibrate: [200, 100, 200], tag: "dadfit" });
+  }).catch(() => new Notification(title, { body }));
 }
 
-function msUntilTime(hour, minute) {
-  const now = new Date();
-  const target = new Date();
-  target.setHours(hour, minute, 0, 0);
-  if (target <= now) target.setDate(target.getDate() + 1);
-  return target - now;
-}
-
-// ─── MAIN APP ───────────────────────────────────────────────────────────────
-
+// ── App ───────────────────────────────────────────────────────────────────────
 export default function App() {
   const [tab, setTab] = useState("today");
   const [expandedDay, setExpandedDay] = useState(null);
   const [expandedMeal, setExpandedMeal] = useState(null);
-
-  // Streak & completion state
-  const [completedDays, setCompletedDays] = useState(() => storage.get("completedDays", {}));
+  const [completedDays, setCompletedDays] = useState(() => store.get("completedDays", {}));
   const [streak, setStreak] = useState(0);
   const [totalWorkouts, setTotalWorkouts] = useState(0);
-
-  // Notifications
-  const [notifPerm, setNotifPerm] = useState(Notification?.permission || "default");
-  const [notifTime, setNotifTime] = useState(() => storage.get("notifTime", "05:55"));
-  const [notifEnabled, setNotifEnabled] = useState(() => storage.get("notifEnabled", false));
-  const [notifScheduled, setNotifScheduled] = useState(false);
-
-  // Weight tracking
-  const [weights, setWeights] = useState(() => storage.get("weights", []));
+  const [weights, setWeights] = useState(() => store.get("weights", []));
   const [weightInput, setWeightInput] = useState("");
+  const [notifPerm, setNotifPerm] = useState(Notification?.permission || "default");
+  const [notifTime, setNotifTime] = useState(() => store.get("notifTime", "05:55"));
+  const [notifEnabled, setNotifEnabled] = useState(() => store.get("notifEnabled", false));
 
-  const todayScheduleIdx = dayIndexToScheduleIndex(getTodayDayIndex());
-  const todayData = DAYS[todayScheduleIdx];
-  const todayKey_ = todayKey();
-  const isTodayDone = completedDays[todayKey_];
+  const todaySchedIdx = dayIdxToSchedule(new Date().getDay());
+  const todayData = DAYS[todaySchedIdx];
+  const todayK = todayKey();
+  const isTodayDone = !!completedDays[todayK];
 
-  // ── Compute streak ──────────────────────────────────────────────────────
   useEffect(() => {
-    // Count streak: consecutive days with a workout type that were completed
     let s = 0;
     const today = new Date();
     for (let i = 0; i < 60; i++) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      const key = d.toISOString().slice(0, 10);
-      const schedIdx = dayIndexToScheduleIndex(d.getDay());
-      const dayData = DAYS[schedIdx];
-      if (dayData.type === "rest") continue; // rest days don't break streak
-      if (completedDays[key]) { s++; }
-      else if (i > 0) break; // missed a workout day — streak ends
+      const d = new Date(today); d.setDate(d.getDate() - i);
+      const k = d.toISOString().slice(0, 10);
+      const sd = DAYS[dayIdxToSchedule(d.getDay())];
+      if (sd.type === "rest") continue;
+      if (completedDays[k]) s++;
+      else if (i > 0) break;
     }
     setStreak(s);
     setTotalWorkouts(Object.values(completedDays).filter(Boolean).length);
   }, [completedDays]);
 
-  // ── Mark today done ─────────────────────────────────────────────────────
   const markDone = useCallback(() => {
-    const updated = { ...completedDays, [todayKey_]: true };
-    setCompletedDays(updated);
-    storage.set("completedDays", updated);
-  }, [completedDays, todayKey_]);
+    const u = { ...completedDays, [todayK]: true };
+    setCompletedDays(u); store.set("completedDays", u);
+  }, [completedDays, todayK]);
 
   const unmarkDone = useCallback(() => {
-    const updated = { ...completedDays };
-    delete updated[todayKey_];
-    setCompletedDays(updated);
-    storage.set("completedDays", updated);
-  }, [completedDays, todayKey_]);
+    const u = { ...completedDays }; delete u[todayK];
+    setCompletedDays(u); store.set("completedDays", u);
+  }, [completedDays, todayK]);
 
-  // ── Notifications ────────────────────────────────────────────────────────
-  const enableNotifications = async () => {
-    const perm = await requestNotificationPermission();
-    setNotifPerm(perm);
-    if (perm === "granted") {
-      setNotifEnabled(true);
-      storage.set("notifEnabled", true);
-      scheduleNextNotification(notifTime);
-    }
-  };
-
-  const scheduleNextNotification = (timeStr) => {
+  const scheduleNotif = useCallback((timeStr) => {
     const [h, m] = timeStr.split(":").map(Number);
-    const delay = msUntilTime(h, m);
-    const schedIdx = dayIndexToScheduleIndex(new Date().getDay());
-    const dayD = DAYS[schedIdx];
-    const isWorkout = dayD.type === "workout";
-    const title = isWorkout ? `💪 Time to train, Dad!` : `👟 Active rest day`;
-    const body = isWorkout ? `${dayD.label} — 25 mins. Get it done before the boys wake up!` : `A short walk today keeps the momentum going.`;
-    scheduleLocalNotification(title, body, delay);
-    setNotifScheduled(true);
-    // Re-schedule daily
-    setTimeout(() => scheduleNextNotification(timeStr), delay + 1000);
-  };
-
-  const handleTimeChange = (e) => {
-    const t = e.target.value;
-    setNotifTime(t);
-    storage.set("notifTime", t);
-    if (notifEnabled && notifPerm === "granted") {
-      scheduleNextNotification(t);
-    }
-  };
-
-  const disableNotifications = () => {
-    setNotifEnabled(false);
-    setNotifScheduled(false);
-    storage.set("notifEnabled", false);
-  };
-
-  // Auto-schedule on mount if was enabled
-  useEffect(() => {
-    if (notifEnabled && notifPerm === "granted") {
-      scheduleNextNotification(notifTime);
-    }
-    // eslint-disable-next-line
+    const delay = msUntil(h, m);
+    const sd = DAYS[dayIdxToSchedule(new Date().getDay())];
+    const isW = sd.type === "workout";
+    fireNotif(isW ? "Time to train, Dad" : "Active rest day", isW ? `${sd.label} — 25 mins. Get it done.` : "A short walk keeps the momentum going.");
+    setTimeout(() => scheduleNotif(timeStr), delay + 1000);
   }, []);
 
-  // ── Weight log ────────────────────────────────────────────────────────────
+  const enableNotifs = async () => {
+    const p = await requestNotifPerm();
+    setNotifPerm(p);
+    if (p === "granted") { setNotifEnabled(true); store.set("notifEnabled", true); scheduleNotif(notifTime); }
+  };
+
+  useEffect(() => {
+    if (notifEnabled && notifPerm === "granted") scheduleNotif(notifTime);
+  }, []); // eslint-disable-line
+
   const addWeight = () => {
     const w = parseFloat(weightInput);
     if (isNaN(w) || w < 40 || w > 200) return;
-    const entry = { date: todayKey_, kg: w };
-    const updated = [...weights.filter(x => x.date !== todayKey_), entry]
+    const updated = [...weights.filter(x => x.date !== todayK), { date: todayK, kg: w }]
       .sort((a, b) => a.date.localeCompare(b.date));
-    setWeights(updated);
-    storage.set("weights", updated);
-    setWeightInput("");
+    setWeights(updated); store.set("weights", updated); setWeightInput("");
   };
 
-  const latestWeight = weights.length > 0 ? weights[weights.length - 1].kg : 98;
-  const startWeight = weights.length > 0 ? weights[0].kg : 98;
-  const lostSoFar = Math.max(0, startWeight - latestWeight).toFixed(1);
-  const progressPct = Math.min(100, (lostSoFar / 10) * 100);
+  const latestWeight = weights.length ? weights[weights.length - 1].kg : 98;
+  const startWeight = weights.length ? weights[0].kg : 98;
+  const lost = Math.max(0, startWeight - latestWeight);
+  const pct = Math.min(100, (lost / 10) * 100);
 
-  // ── Streak milestones ─────────────────────────────────────────────────────
-  const streakEmoji = streak === 0 ? "🌱" : streak < 4 ? "🔥" : streak < 8 ? "⚡" : streak < 12 ? "💪" : "🏆";
+  const streakLabel = streak === 0 ? "Start today" : streak < 4 ? "Building momentum" : streak < 8 ? "On a roll" : streak < 12 ? "Unstoppable" : "Legend status";
 
-  // ─── RENDER ───────────────────────────────────────────────────────────────
-
-  const S = styles;
+  // ── CSS vars injected once ──
+  const cssVars = `
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #222;
+      --border: #2a2a2a;
+      --text: #f0f0f0;
+      --muted: #666;
+      --accent: #C8FF00;
+      --accent2: #FF6B35;
+      --accent3: #00D4FF;
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); }
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    input[type=time] { color-scheme: dark; }
+  `;
 
   return (
-    <div style={S.app}>
-      {/* ── HEADER ── */}
-      <div style={S.header}>
-        <div style={S.headerLabel}>DAD FITNESS PLAN</div>
-        <div style={S.headerStats}>
-          <div style={S.stat}>
-            <span style={S.statVal}>{streakEmoji} {streak}</span>
-            <span style={S.statLbl}>STREAK</span>
-          </div>
-          <div style={S.statDivider} />
-          <div style={S.stat}>
-            <span style={S.statVal}>{totalWorkouts}</span>
-            <span style={S.statLbl}>TOTAL</span>
-          </div>
-          <div style={S.statDivider} />
-          <div style={S.stat}>
-            <span style={S.statVal}>{lostSoFar}kg</span>
-            <span style={S.statLbl}>LOST</span>
-          </div>
-          <div style={S.statDivider} />
-          <div style={S.stat}>
-            <span style={S.statVal}>{(10 - parseFloat(lostSoFar)).toFixed(1)}kg</span>
-            <span style={S.statLbl}>TO GO</span>
-          </div>
-        </div>
-        {/* Progress bar */}
-        <div style={S.progressWrap}>
-          <div style={{ ...S.progressBar, width: `${progressPct}%` }} />
-        </div>
-        <div style={S.progressLabel}>{progressPct.toFixed(0)}% of 10kg goal</div>
-      </div>
+    <>
+      <style>{cssVars}</style>
+      <div style={{ fontFamily: "var(--font)", background: "var(--bg)", minHeight: "100dvh", maxWidth: 480, margin: "0 auto", paddingBottom: 80 }}>
 
-      {/* ── TABS ── */}
-      <div style={S.tabs}>
-        {[
-          { id: "today", icon: "📍", label: "Today" },
-          { id: "schedule", icon: "📅", label: "Schedule" },
-          { id: "meals", icon: "🍽️", label: "Meals" },
-          { id: "progress", icon: "📊", label: "Progress" },
-          { id: "settings", icon: "⚙️", label: "Settings" },
-        ].map(t => (
-          <button key={t.id} onClick={() => setTab(t.id)} style={{
-            ...S.tab, ...(tab === t.id ? S.tabActive : {})
-          }}>
-            <span style={{ fontSize: 16 }}>{t.icon}</span>
-            <span style={{ fontSize: 10 }}>{t.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* ── CONTENT ── */}
-      <div style={S.content}>
-
-        {/* TODAY TAB */}
-        {tab === "today" && (
-          <div>
-            <div style={{ ...S.card, background: todayData.color, border: `2px solid ${todayData.accent}30` }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <div>
-                  <div style={{ fontSize: 11, letterSpacing: 2, color: todayData.accent, fontFamily: "monospace", fontWeight: 700 }}>
-                    {todayData.tag} · {todayData.day.toUpperCase()}
-                  </div>
-                  <div style={{ fontSize: 22, fontWeight: 800, color: "#1a1a2e", marginTop: 4 }}>{todayData.label}</div>
-                  <div style={{ fontSize: 13, color: "#666", marginTop: 2 }}>⏰ {todayData.time}</div>
-                </div>
-                {isTodayDone && (
-                  <div style={{
-                    width: 48, height: 48, borderRadius: 24,
-                    background: todayData.accent, color: "white",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 24, boxShadow: `0 4px 12px ${todayData.accent}40`
-                  }}>✓</div>
-                )}
+        {/* ── HEADER ── */}
+        <div style={{ background: "var(--bg)", padding: "max(env(safe-area-inset-top), 20px) 20px 0", borderBottom: "1px solid var(--border)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 20 }}>
+            <div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 3, color: "var(--muted)", marginBottom: 4 }}>DADFIT</div>
+              <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1 }}>
+                {lost > 0 ? <><span style={{ color: "var(--accent)" }}>{lost.toFixed(1)}kg</span> down</> : "Let's go, Dad"}
               </div>
-
-              {todayData.type === "workout" && todayData.exercises && (
-                <div style={{ marginTop: 16 }}>
-                  <div style={S.sectionLabel}>WARMUP</div>
-                  <div style={{ ...S.infoBox, background: todayData.accent + "15", color: todayData.accent }}>
-                    🔥 {todayData.warmup}
-                  </div>
-                  <div style={S.sectionLabel}>EXERCISES</div>
-                  {todayData.exercises.map((ex, i) => (
-                    <div key={i} style={S.exerciseRow}>
-                      <div>
-                        <div style={S.exerciseName}>{ex.name}</div>
-                        {ex.note && <div style={S.exerciseNote}>{ex.note}</div>}
-                      </div>
-                      <div style={{ ...S.badge, background: todayData.accent + "20", color: todayData.accent }}>{ex.sets}</div>
-                    </div>
-                  ))}
-                  <div style={{ ...S.infoBox, background: "#f5f5f5", color: "#666", marginTop: 8 }}>
-                    🧘 {todayData.cooldown}
-                  </div>
-                </div>
-              )}
-
-              {todayData.type === "rest" && (
-                <div style={{ ...S.infoBox, background: "#f5f5f5", color: "#666", marginTop: 12 }}>
-                  {todayData.note}
-                </div>
-              )}
-
-              <button
-                onClick={isTodayDone ? unmarkDone : markDone}
-                style={{
-                  ...S.btn,
-                  background: isTodayDone ? "#e0e0e0" : todayData.accent,
-                  color: isTodayDone ? "#666" : "white",
-                  marginTop: 20,
-                }}
-              >
-                {isTodayDone ? "✓ Done — tap to undo" : todayData.type === "rest" ? "✓ Mark rest day done" : "✓ Mark workout complete"}
+              <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4 }}>{(10 - lost).toFixed(1)}kg to goal · Week {Math.ceil((totalWorkouts || 1) / 4)}</div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: 36, fontWeight: 700, color: streak > 0 ? "var(--accent)" : "var(--muted)", letterSpacing: -2, lineHeight: 1 }}>{streak}</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 2, color: "var(--muted)" }}>DAY STREAK</div>
+              {streak > 0 && <div style={{ fontSize: 11, color: "var(--accent)", marginTop: 2 }}>{streakLabel}</div>}
+            </div>
+          </div>
+          {/* Progress bar */}
+          <div style={{ height: 3, background: "var(--border)", marginBottom: 0, position: "relative" }}>
+            <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${pct}%`, background: "var(--accent)", borderRadius: 2, transition: "width 0.6s ease" }} />
+          </div>
+          {/* Tabs */}
+          <div style={{ display: "flex", marginTop: 0 }}>
+            {[
+              { id: "today", icon: "today", label: "Today" },
+              { id: "schedule", icon: "schedule", label: "Schedule" },
+              { id: "meals", icon: "meals", label: "Meals" },
+              { id: "progress", icon: "progress", label: "Progress" },
+              { id: "settings", icon: "settings", label: "Settings" },
+            ].map(t => (
+              <button key={t.id} onClick={() => setTab(t.id)} style={{
+                flex: 1, background: "none", border: "none", cursor: "pointer",
+                padding: "12px 4px 14px",
+                borderBottom: tab === t.id ? `2px solid var(--accent)` : "2px solid transparent",
+                color: tab === t.id ? "var(--accent)" : "var(--muted)",
+                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                transition: "color 0.15s",
+              }}>
+                <Icon name={t.icon} size={18} strokeWidth={tab === t.id ? 2 : 1.5} />
+                <span style={{ fontSize: 9, fontFamily: "var(--mono)", letterSpacing: 1 }}>{t.label.toUpperCase()}</span>
               </button>
-            </div>
-
-            {streak > 0 && (
-              <div style={{ ...S.card, background: "#1a1a2e", color: "white", textAlign: "center" }}>
-                <div style={{ fontSize: 36 }}>{streakEmoji}</div>
-                <div style={{ fontSize: 20, fontWeight: 800, marginTop: 8 }}>{streak} day streak!</div>
-                <div style={{ fontSize: 13, color: "#a0a0c0", marginTop: 4 }}>
-                  {streak < 4 ? "Great start — keep it going!" : streak < 8 ? "You're building a habit 🔥" : streak < 12 ? "You're on fire, Dad! ⚡" : "Absolute legend 🏆"}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* SCHEDULE TAB */}
-        {tab === "schedule" && (
-          <div>
-            <p style={S.hint}>Tap any workout day to see exercises.</p>
-            {DAYS.map((d, i) => {
-              // Find the date for this day in the current week
-              const today = new Date();
-              const currDay = today.getDay();
-              const currIdx = dayIndexToScheduleIndex(currDay);
-              const diff = i - currIdx;
-              const dayDate = new Date(today);
-              dayDate.setDate(today.getDate() + diff);
-              const dateKey = dayDate.toISOString().slice(0, 10);
-              const done = completedDays[dateKey];
-
-              return (
-                <div key={d.day} style={{
-                  ...S.card, background: d.color, padding: 0, overflow: "hidden",
-                  border: `1px solid ${d.type === "rest" ? "#e8e8e8" : d.accent + "40"}`,
-                  outline: i === todayScheduleIdx ? `2px solid ${d.accent}` : "none",
-                }}>
-                  <div onClick={() => d.type !== "rest" && setExpandedDay(expandedDay === i ? null : i)}
-                    style={{ display: "flex", alignItems: "center", padding: "14px 16px", gap: 12, cursor: d.type !== "rest" ? "pointer" : "default" }}>
-                    <div style={{
-                      width: 44, height: 44, borderRadius: 10,
-                      background: d.type === "rest" ? "#e0e0e0" : d.accent,
-                      color: d.type === "rest" ? "#999" : "white",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: 10, fontWeight: 700, letterSpacing: 0.5, fontFamily: "monospace", flexShrink: 0,
-                      position: "relative"
-                    }}>
-                      {done ? "✓" : d.short}
-                      {i === todayScheduleIdx && !done && (
-                        <div style={{
-                          position: "absolute", top: -4, right: -4, width: 10, height: 10,
-                          borderRadius: 5, background: "#ff5722", border: "2px solid white"
-                        }} />
-                      )}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 15, color: "#1a1a2e" }}>
-                        {d.label} {i === todayScheduleIdx && <span style={{ fontSize: 10, color: d.accent, fontFamily: "monospace" }}> ← TODAY</span>}
-                      </div>
-                      <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>{d.time}</div>
-                    </div>
-                    <div style={{ textAlign: "right" }}>
-                      <div style={{ fontSize: 10, letterSpacing: 1.5, fontFamily: "monospace", color: d.type === "rest" ? "#bbb" : d.accent, fontWeight: 700 }}>{d.tag}</div>
-                      {d.type !== "rest" && <div style={{ fontSize: 16, color: "#ccc", marginTop: 2 }}>{expandedDay === i ? "▲" : "▼"}</div>}
-                    </div>
-                  </div>
-                  {expandedDay === i && d.exercises && (
-                    <div style={{ padding: "0 16px 16px", borderTop: `1px solid ${d.accent}20` }}>
-                      <div style={{ ...S.infoBox, background: d.accent + "15", color: d.accent, marginBottom: 8 }}>🔥 {d.warmup}</div>
-                      {d.exercises.map((ex, j) => (
-                        <div key={j} style={{ ...S.exerciseRow, borderBottom: j < d.exercises.length - 1 ? "1px solid #f0f0f0" : "none" }}>
-                          <div>
-                            <div style={S.exerciseName}>{ex.name}</div>
-                            {ex.note && <div style={S.exerciseNote}>{ex.note}</div>}
-                          </div>
-                          <div style={{ ...S.badge, background: d.accent + "15", color: d.accent }}>{ex.sets}</div>
-                        </div>
-                      ))}
-                      <div style={{ ...S.infoBox, background: "#f5f5f5", color: "#666", marginTop: 8 }}>🧘 {d.cooldown}</div>
-                    </div>
-                  )}
-                  {d.type === "rest" && d.note && (
-                    <div style={{ padding: "0 16px 14px", fontSize: 12, color: "#888", fontStyle: "italic" }}>{d.note}</div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* MEALS TAB */}
-        {tab === "meals" && (
-          <div>
-            <div style={{ ...S.card, background: "#1a1a2e", color: "white" }}>
-              <div style={{ fontSize: 13, lineHeight: 1.8 }}>
-                <strong>Daily target:</strong> ~1,800–2,000 kcal<br />
-                <strong>Protein goal:</strong> 140–160g/day<br />
-                <span style={{ color: "#a0a0c0" }}>Eat cleaner versions of normal food — no extreme dieting.</span>
-              </div>
-            </div>
-            {MEALS.map((m, i) => (
-              <div key={m.meal} style={{ ...S.card, padding: 0, overflow: "hidden" }}>
-                <div onClick={() => setExpandedMeal(expandedMeal === i ? null : i)}
-                  style={{ display: "flex", alignItems: "center", padding: "14px 16px", gap: 12, cursor: "pointer" }}>
-                  <div style={{ fontSize: 28 }}>{m.icon}</div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, fontSize: 15 }}>{m.meal}</div>
-                    <div style={{ fontSize: 12, color: "#888" }}>{m.goal}</div>
-                  </div>
-                  <div style={{ textAlign: "right" }}>
-                    <div style={{ fontSize: 11, fontFamily: "monospace", color: "#2e7d32", fontWeight: 700 }}>{m.calories}</div>
-                    <div style={{ fontSize: 16, color: "#ccc", marginTop: 2 }}>{expandedMeal === i ? "▲" : "▼"}</div>
-                  </div>
-                </div>
-                {expandedMeal === i && (
-                  <div style={{ padding: "0 16px 16px", borderTop: "1px solid #f0f0f0" }}>
-                    <div style={S.sectionLabel}>GOOD OPTIONS</div>
-                    {m.ideas.map((idea, j) => (
-                      <div key={j} style={{ padding: "7px 10px", background: "#f9f9f9", borderRadius: 6, fontSize: 13, marginBottom: 4 }}>{idea}</div>
-                    ))}
-                    <div style={{ ...S.infoBox, background: "#fff3f3", color: "#c62828", marginTop: 8 }}>
-                      ⚠️ <strong>Avoid:</strong> {m.avoid}
-                    </div>
-                  </div>
-                )}
-              </div>
             ))}
-            <div style={S.card}>
-              <div style={S.sectionLabel}>DAILY TIPS</div>
-              {TIPS.map((t, i) => (
-                <div key={i} style={{ display: "flex", gap: 10, marginBottom: 10, alignItems: "flex-start" }}>
-                  <span style={{ fontSize: 20 }}>{t.icon}</span>
-                  <span style={{ fontSize: 13, color: "#333", lineHeight: 1.5 }}>{t.text}</span>
-                </div>
-              ))}
-            </div>
           </div>
-        )}
+        </div>
 
-        {/* PROGRESS TAB */}
-        {tab === "progress" && (
-          <div>
-            {/* Weight entry */}
-            <div style={S.card}>
-              <div style={S.sectionLabel}>LOG TODAY'S WEIGHT</div>
-              <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
-                <input
-                  type="number"
-                  value={weightInput}
-                  onChange={e => setWeightInput(e.target.value)}
-                  placeholder="e.g. 97.5"
-                  style={{
-                    flex: 1, padding: "12px 14px", borderRadius: 10,
-                    border: "1.5px solid #e0e0e0", fontSize: 16,
-                    background: "#fafafa", outline: "none",
-                  }}
-                  step="0.1"
-                />
-                <button onClick={addWeight} style={{ ...S.btn, padding: "12px 20px", margin: 0, width: "auto" }}>
-                  Save
+        {/* ── CONTENT ── */}
+        <div style={{ padding: "20px 16px" }}>
+
+          {/* TODAY */}
+          {tab === "today" && (
+            <div>
+              {/* Today card */}
+              <div style={{ background: "var(--surface)", borderRadius: 16, padding: 20, marginBottom: 12, border: "1px solid var(--border)", position: "relative", overflow: "hidden" }}>
+                {/* Accent stripe */}
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: ACCENTS[todayData.accentIdx] }} />
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                  <div>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 6 }}>{todayData.tag} · {todayData.day.toUpperCase()}</div>
+                    <div style={{ fontSize: 24, fontWeight: 700, letterSpacing: -0.5 }}>{todayData.label}</div>
+                    <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 4, display: "flex", alignItems: "center", gap: 6 }}>
+                      <Icon name="today" size={13} color="var(--muted)" />
+                      {todayData.time}
+                    </div>
+                  </div>
+                  {isTodayDone && (
+                    <div style={{ width: 44, height: 44, borderRadius: 22, background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon name="check" size={22} color="#000" strokeWidth={2.5} />
+                    </div>
+                  )}
+                </div>
+
+                {todayData.type === "workout" && todayData.exercises && (
+                  <>
+                    <div style={{ background: "var(--surface2)", borderRadius: 10, padding: "10px 14px", marginBottom: 12, fontSize: 12, color: "var(--muted)", borderLeft: `3px solid ${ACCENTS[todayData.accentIdx]}` }}>
+                      Warmup — {todayData.warmup}
+                    </div>
+                    {todayData.exercises.map((ex, i) => (
+                      <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", padding: "10px 0", borderBottom: i < todayData.exercises.length - 1 ? "1px solid var(--border)" : "none" }}>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: 14 }}>{ex.name}</div>
+                          {ex.note && <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>{ex.note}</div>}
+                        </div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: 12, color: ACCENTS[todayData.accentIdx], background: ACCENTS[todayData.accentIdx] + "18", padding: "4px 10px", borderRadius: 6, whiteSpace: "nowrap", marginLeft: 12 }}>
+                          {ex.sets}
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ background: "var(--surface2)", borderRadius: 10, padding: "10px 14px", marginTop: 12, fontSize: 12, color: "var(--muted)" }}>
+                      Cooldown — {todayData.cooldown}
+                    </div>
+                  </>
+                )}
+
+                {todayData.type === "rest" && (
+                  <div style={{ fontSize: 14, color: "var(--muted)", lineHeight: 1.6 }}>{todayData.note}</div>
+                )}
+
+                <button onClick={isTodayDone ? unmarkDone : markDone} style={{
+                  width: "100%", marginTop: 20, padding: "14px", borderRadius: 12, border: "none", cursor: "pointer",
+                  background: isTodayDone ? "var(--surface2)" : "var(--accent)",
+                  color: isTodayDone ? "var(--muted)" : "#000",
+                  fontFamily: "var(--mono)", fontSize: 13, fontWeight: 600, letterSpacing: 1,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  transition: "all 0.15s",
+                }}>
+                  <Icon name="check" size={16} color={isTodayDone ? "var(--muted)" : "#000"} strokeWidth={2.5} />
+                  {isTodayDone ? "MARKED DONE — UNDO" : todayData.type === "rest" ? "MARK REST DAY DONE" : "MARK WORKOUT COMPLETE"}
                 </button>
               </div>
-              <div style={{ fontSize: 11, color: "#aaa", marginTop: 6 }}>Weigh in once per week, same morning conditions</div>
-            </div>
 
-            {/* Weight chart */}
-            {weights.length > 0 && (
-              <div style={S.card}>
-                <div style={S.sectionLabel}>WEIGHT HISTORY</div>
-                <div style={{ marginTop: 12 }}>
+              {/* Streak card */}
+              {streak > 0 && (
+                <div style={{ background: "var(--surface)", borderRadius: 16, padding: 20, border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 16 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 26, background: "#C8FF0018", border: "2px solid var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Icon name="flame" size={24} color="var(--accent)" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 700 }}>{streak} day streak</div>
+                    <div style={{ fontSize: 13, color: "var(--muted)", marginTop: 2 }}>{streakLabel} — keep it going</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* SCHEDULE */}
+          {tab === "schedule" && (
+            <div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 16 }}>THIS WEEK</div>
+              {DAYS.map((d, i) => {
+                const today = new Date(), currIdx = dayIdxToSchedule(today.getDay());
+                const diff = i - currIdx;
+                const dd = new Date(today); dd.setDate(today.getDate() + diff);
+                const dk = dd.toISOString().slice(0, 10);
+                const done = completedDays[dk];
+                const isToday = i === todaySchedIdx;
+                const acc = ACCENTS[d.accentIdx];
+                return (
+                  <div key={d.day} style={{ background: "var(--surface)", borderRadius: 14, marginBottom: 8, overflow: "hidden", border: isToday ? `1px solid ${acc}` : "1px solid var(--border)" }}>
+                    <div onClick={() => d.type !== "rest" && setExpandedDay(expandedDay === i ? null : i)}
+                      style={{ display: "flex", alignItems: "center", padding: "14px 16px", gap: 14, cursor: d.type !== "rest" ? "pointer" : "default" }}>
+                      <div style={{
+                        width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+                        background: done ? acc : d.type === "rest" ? "var(--surface2)" : acc + "18",
+                        border: `1px solid ${done ? acc : d.type === "rest" ? "var(--border)" : acc + "40"}`,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        {done
+                          ? <Icon name="check" size={18} color="#000" strokeWidth={2.5} />
+                          : <span style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1, color: d.type === "rest" ? "var(--muted)" : acc, fontWeight: 600 }}>{d.short}</span>
+                        }
+                      </div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, fontSize: 15, display: "flex", alignItems: "center", gap: 8 }}>
+                          {d.label}
+                          {isToday && <span style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1, color: acc, background: acc + "18", padding: "2px 6px", borderRadius: 4 }}>TODAY</span>}
+                        </div>
+                        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>{d.time}</div>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1.5, color: d.type === "rest" ? "var(--muted)" : acc }}>{d.tag}</span>
+                        {d.type !== "rest" && <Icon name={expandedDay === i ? "chevronUp" : "chevronDown"} size={16} color="var(--muted)" />}
+                      </div>
+                    </div>
+                    {expandedDay === i && d.exercises && (
+                      <div style={{ padding: "0 16px 16px", borderTop: "1px solid var(--border)" }}>
+                        <div style={{ fontSize: 12, color: "var(--muted)", padding: "10px 0", borderLeft: `2px solid ${acc}`, paddingLeft: 10, marginBottom: 4 }}>
+                          Warmup — {d.warmup}
+                        </div>
+                        {d.exercises.map((ex, j) => (
+                          <div key={j} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "9px 0", borderBottom: j < d.exercises.length - 1 ? "1px solid var(--border)" : "none" }}>
+                            <div>
+                              <div style={{ fontWeight: 600, fontSize: 14 }}>{ex.name}</div>
+                              {ex.note && <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 1 }}>{ex.note}</div>}
+                            </div>
+                            <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: acc, background: acc + "15", padding: "4px 10px", borderRadius: 6, whiteSpace: "nowrap", marginLeft: 12 }}>{ex.sets}</div>
+                          </div>
+                        ))}
+                        <div style={{ fontSize: 12, color: "var(--muted)", paddingTop: 10, paddingLeft: 10, borderLeft: "2px solid var(--border)" }}>
+                          Cooldown — {d.cooldown}
+                        </div>
+                      </div>
+                    )}
+                    {d.type === "rest" && d.note && expandedDay !== i && (
+                      <div style={{ padding: "0 16px 14px", fontSize: 12, color: "var(--muted)" }}>{d.note}</div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* MEALS */}
+          {tab === "meals" && (
+            <div>
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 16, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  {[
+                    { label: "Daily Target", val: "~1,900 kcal" },
+                    { label: "Protein Goal", val: "150g+" },
+                  ].map(s => (
+                    <div key={s.label}>
+                      <div style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>{s.val}</div>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 1, color: "var(--muted)", marginTop: 2 }}>{s.label.toUpperCase()}</div>
+                    </div>
+                  ))}
+                  <div>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: "var(--accent)" }}>5</div>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 1, color: "var(--muted)", marginTop: 2 }}>MEALS/DAY</div>
+                  </div>
+                </div>
+              </div>
+              {MEALS.map((m, i) => (
+                <div key={m.meal} style={{ background: "var(--surface)", borderRadius: 14, marginBottom: 8, overflow: "hidden", border: "1px solid var(--border)" }}>
+                  <div onClick={() => setExpandedMeal(expandedMeal === i ? null : i)}
+                    style={{ display: "flex", alignItems: "center", padding: "14px 16px", gap: 14, cursor: "pointer" }}>
+                    <div style={{ width: 40, height: 40, borderRadius: 10, background: "#C8FF0015", border: "1px solid #C8FF0030", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Icon name="meals" size={18} color="var(--accent)" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: 15 }}>{m.meal}</div>
+                      <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 1 }}>{m.time} · {m.goal}</div>
+                    </div>
+                    <div style={{ textAlign: "right", display: "flex", alignItems: "center", gap: 10 }}>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--accent)" }}>{m.cal}</span>
+                      <Icon name={expandedMeal === i ? "chevronUp" : "chevronDown"} size={16} color="var(--muted)" />
+                    </div>
+                  </div>
+                  {expandedMeal === i && (
+                    <div style={{ padding: "0 16px 16px", borderTop: "1px solid var(--border)" }}>
+                      <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 2, color: "var(--muted)", margin: "12px 0 8px" }}>GOOD OPTIONS</div>
+                      {m.ideas.map((idea, j) => (
+                        <div key={j} style={{ padding: "8px 12px", background: "var(--surface2)", borderRadius: 8, fontSize: 13, marginBottom: 4 }}>{idea}</div>
+                      ))}
+                      <div style={{ marginTop: 10, padding: "8px 12px", background: "#FF3B6B10", borderRadius: 8, fontSize: 12, color: "#FF6B6B", borderLeft: "3px solid #FF3B6B" }}>
+                        Avoid — {m.avoid}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, border: "1px solid var(--border)", marginTop: 8 }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 14 }}>DAILY TIPS</div>
+                {TIPS.map((t, i) => (
+                  <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: i < TIPS.length - 1 ? 12 : 0 }}>
+                    <Icon name={t.icon} size={16} color="var(--accent)" />
+                    <span style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.5 }}>{t.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* PROGRESS */}
+          {tab === "progress" && (
+            <div>
+              {/* Stats row */}
+              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                {[
+                  { label: "START", val: `${startWeight}kg` },
+                  { label: "NOW", val: `${latestWeight}kg`, highlight: true },
+                  { label: "LOST", val: `${lost.toFixed(1)}kg` },
+                  { label: "TO GO", val: `${Math.max(0, latestWeight - 88).toFixed(1)}kg` },
+                ].map(s => (
+                  <div key={s.label} style={{ flex: 1, background: s.highlight ? "#C8FF0015" : "var(--surface)", borderRadius: 12, padding: "12px 8px", textAlign: "center", border: s.highlight ? "1px solid #C8FF0040" : "1px solid var(--border)" }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: s.highlight ? "var(--accent)" : "var(--text)" }}>{s.val}</div>
+                    <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1.5, color: "var(--muted)", marginTop: 2 }}>{s.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Weight log */}
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 12 }}>LOG WEIGHT</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input type="number" value={weightInput} onChange={e => setWeightInput(e.target.value)}
+                    placeholder="e.g. 97.5" step="0.1"
+                    style={{ flex: 1, padding: "12px 14px", borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--text)", fontSize: 16, outline: "none", fontFamily: "var(--font)" }}
+                  />
+                  <button onClick={addWeight} style={{ padding: "12px 18px", borderRadius: 10, border: "none", background: "var(--accent)", color: "#000", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", gap: 6 }}>
+                    <Icon name="plus" size={16} color="#000" strokeWidth={2.5} />
+                    LOG
+                  </button>
+                </div>
+              </div>
+
+              {/* Weight chart */}
+              {weights.length > 1 && (
+                <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 14 }}>WEIGHT HISTORY</div>
                   {weights.slice(-8).map((w, i, arr) => {
                     const max = Math.max(...arr.map(x => x.kg));
                     const min = Math.min(...arr.map(x => x.kg));
                     const range = max - min || 1;
-                    const pct = ((w.kg - min) / range) * 100;
-                    const barW = 20 + (pct * 0.8);
+                    const barW = 15 + ((w.kg - min) / range) * 75;
+                    const isLatest = i === arr.length - 1;
                     return (
                       <div key={w.date} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
-                        <div style={{ fontSize: 11, color: "#888", fontFamily: "monospace", width: 72, flexShrink: 0 }}>
-                          {w.date.slice(5)}
+                        <div style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--muted)", width: 48, flexShrink: 0 }}>{w.date.slice(5)}</div>
+                        <div style={{ flex: 1, height: 24, background: "var(--surface2)", borderRadius: 4, overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: `${barW}%`, background: isLatest ? "var(--accent)" : "#C8FF0050", borderRadius: 4, transition: "width 0.4s" }} />
                         </div>
-                        <div style={{ flex: 1, background: "#f0f0f0", borderRadius: 4, height: 22, overflow: "hidden" }}>
-                          <div style={{
-                            height: "100%", width: `${barW}%`,
-                            background: w.kg < (arr[0]?.kg || 98) ? "#2e7d32" : "#1565c0",
-                            borderRadius: 4, transition: "width 0.3s",
-                          }} />
-                        </div>
-                        <div style={{ fontSize: 13, fontWeight: 700, fontFamily: "monospace", width: 48, flexShrink: 0, textAlign: "right" }}>
-                          {w.kg}kg
-                        </div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, color: isLatest ? "var(--accent)" : "var(--text)", width: 48, textAlign: "right", flexShrink: 0 }}>{w.kg}kg</div>
                       </div>
                     );
                   })}
                 </div>
-                <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
-                  {[
-                    { label: "Start", val: `${weights[0]?.kg ?? 98}kg` },
-                    { label: "Current", val: `${latestWeight}kg` },
-                    { label: "Lost", val: `${lostSoFar}kg` },
-                    { label: "To Goal", val: `${Math.max(0, latestWeight - 88).toFixed(1)}kg` },
-                  ].map(s => (
-                    <div key={s.label} style={{ flex: 1, minWidth: 60, textAlign: "center", background: "#f5f5f5", borderRadius: 10, padding: "10px 6px" }}>
-                      <div style={{ fontSize: 16, fontWeight: 800, color: "#1a1a2e" }}>{s.val}</div>
-                      <div style={{ fontSize: 10, color: "#888", letterSpacing: 1 }}>{s.label.toUpperCase()}</div>
-                    </div>
-                  ))}
+              )}
+
+              {/* Weekly grid */}
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 14 }}>THIS WEEK</div>
+                <div style={{ display: "flex", gap: 6, justifyContent: "space-between" }}>
+                  {DAYS.map((d, i) => {
+                    const today = new Date(), currIdx = dayIdxToSchedule(today.getDay());
+                    const diff = i - currIdx;
+                    const dd = new Date(today); dd.setDate(today.getDate() + diff);
+                    const done = completedDays[dd.toISOString().slice(0, 10)];
+                    const isToday = i === todaySchedIdx;
+                    const acc = ACCENTS[d.accentIdx];
+                    return (
+                      <div key={d.day} style={{ flex: 1, textAlign: "center" }}>
+                        <div style={{
+                          height: 36, borderRadius: 8, margin: "0 auto",
+                          background: done ? acc : d.type === "rest" ? "var(--surface2)" : "var(--border)",
+                          border: isToday ? `2px solid ${acc}` : "2px solid transparent",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                        }}>
+                          {done && <Icon name="check" size={14} color="#000" strokeWidth={2.5} />}
+                        </div>
+                        <div style={{ fontFamily: "var(--mono)", fontSize: 8, color: isToday ? acc : "var(--muted)", marginTop: 4, letterSpacing: 0.5 }}>{d.short}</div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-            )}
 
-            {/* Weekly completion */}
-            <div style={S.card}>
-              <div style={S.sectionLabel}>THIS WEEK'S WORKOUTS</div>
-              <div style={{ display: "flex", gap: 8, marginTop: 10, justifyContent: "space-between" }}>
-                {DAYS.map((d, i) => {
-                  const today = new Date();
-                  const currIdx = dayIndexToScheduleIndex(today.getDay());
-                  const diff = i - currIdx;
-                  const dayDate = new Date(today);
-                  dayDate.setDate(today.getDate() + diff);
-                  const dateKey = dayDate.toISOString().slice(0, 10);
-                  const done = completedDays[dateKey];
-                  const isToday = i === todayScheduleIdx;
+              {/* Milestones */}
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, border: "1px solid var(--border)" }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 14 }}>MILESTONES</div>
+                {[
+                  { week: 4, target: 2, note: "Body adjusting, energy improving" },
+                  { week: 8, target: 4, note: "Clothes feeling looser" },
+                  { week: 12, target: 7, note: "Noticeably different in photos" },
+                  { week: 16, target: 10, note: "Goal achieved" },
+                ].map((m, i) => {
+                  const reached = lost >= m.target;
                   return (
-                    <div key={d.day} style={{ textAlign: "center", flex: 1 }}>
-                      <div style={{
-                        width: "100%", aspectRatio: "1", borderRadius: 8, maxWidth: 40,
-                        background: done ? d.accent : d.type === "rest" ? "#f0f0f0" : "#e0e0e0",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        margin: "0 auto", color: done ? "white" : "#999",
-                        fontSize: 14, fontWeight: 700, border: isToday ? `2px solid ${d.accent}` : "2px solid transparent",
-                      }}>
-                        {done ? "✓" : d.type === "rest" ? "—" : "·"}
+                    <div key={i} style={{ display: "flex", alignItems: "center", gap: 14, padding: "10px 0", borderBottom: i < 3 ? "1px solid var(--border)" : "none" }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 18, flexShrink: 0, background: reached ? "var(--accent)" : "var(--surface2)", border: `1px solid ${reached ? "var(--accent)" : "var(--border)"}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        {reached ? <Icon name="check" size={16} color="#000" strokeWidth={2.5} /> : <span style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--muted)" }}>W{m.week}</span>}
                       </div>
-                      <div style={{ fontSize: 9, color: "#aaa", marginTop: 4, fontFamily: "monospace" }}>{d.short}</div>
+                      <div style={{ flex: 1 }}>
+                        <div style={{ fontWeight: 600, fontSize: 14, color: reached ? "var(--accent)" : "var(--text)" }}>−{m.target}kg</div>
+                        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 1 }}>{m.note}</div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
             </div>
+          )}
 
-            {/* Milestones */}
-            <div style={S.card}>
-              <div style={S.sectionLabel}>MILESTONES</div>
-              {[
-                { week: "Week 4", kg: "−1.5 to −2kg", note: "Body adjusting, energy improving", wks: 4 },
-                { week: "Week 8", kg: "−3 to −4kg", note: "Clothes feeling looser", wks: 8 },
-                { week: "Week 12", kg: "−5 to −7kg", note: "Noticeably different in photos", wks: 12 },
-                { week: "Week 16", kg: "−8 to −10kg", note: "Goal achieved! 🎉", wks: 16 },
-              ].map((m, i) => {
-                const reached = parseFloat(lostSoFar) >= parseFloat(m.kg.split("−")[1]);
-                return (
-                  <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 0", borderBottom: i < 3 ? "1px solid #f0f0f0" : "none" }}>
-                    <div style={{
-                      width: 36, height: 36, borderRadius: 18, flexShrink: 0,
-                      background: reached ? "#2e7d32" : "#e0e0e0",
-                      color: reached ? "white" : "#999",
-                      display: "flex", alignItems: "center", justifyContent: "center",
-                      fontSize: reached ? 18 : 11, fontWeight: 700, fontFamily: "monospace",
-                    }}>
-                      {reached ? "✓" : `W${m.wks}`}
-                    </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: reached ? "#2e7d32" : "#1a1a2e" }}>{m.kg}</div>
-                      <div style={{ fontSize: 12, color: "#888" }}>{m.note}</div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* SETTINGS TAB */}
-        {tab === "settings" && (
-          <div>
-            <div style={S.card}>
-              <div style={S.sectionLabel}>🔔 WORKOUT REMINDERS</div>
-              <p style={{ fontSize: 13, color: "#666", marginTop: 8, lineHeight: 1.6 }}>
-                Get a notification before your alarm goes off to mentally prepare for the workout.
-              </p>
-
-              {notifPerm === "denied" && (
-                <div style={{ ...S.infoBox, background: "#fff3f3", color: "#c62828", marginTop: 10 }}>
-                  ⚠️ Notifications are blocked. Enable them in your browser/phone settings for this site.
+          {/* SETTINGS */}
+          {tab === "settings" && (
+            <div>
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <Icon name="bell" size={18} color="var(--accent)" />
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)" }}>WORKOUT REMINDERS</div>
                 </div>
-              )}
-
-              {notifPerm !== "denied" && (
-                <>
-                  <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 14 }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600 }}>Reminder time</div>
-                      <div style={{ fontSize: 12, color: "#888" }}>Set to 5 min before you want to start</div>
-                    </div>
-                    <input
-                      type="time"
-                      value={notifTime}
-                      onChange={handleTimeChange}
-                      style={{
-                        padding: "10px 12px", borderRadius: 10,
-                        border: "1.5px solid #e0e0e0", fontSize: 15,
-                        background: "#fafafa", outline: "none", fontFamily: "monospace",
-                      }}
-                    />
+                <p style={{ fontSize: 13, color: "var(--muted)", lineHeight: 1.6, marginBottom: 14 }}>
+                  Get a notification before your alarm — mentally prepare before the house wakes up.
+                </p>
+                {notifPerm === "denied" ? (
+                  <div style={{ padding: "10px 14px", background: "#FF3B6B10", borderRadius: 10, fontSize: 13, color: "#FF6B6B", borderLeft: "3px solid #FF3B6B" }}>
+                    Notifications blocked. Enable them in your phone settings for this site.
                   </div>
-
-                  <button
-                    onClick={notifEnabled ? disableNotifications : enableNotifications}
-                    style={{
-                      ...S.btn, marginTop: 16,
-                      background: notifEnabled ? "#e0e0e0" : "#1a1a2e",
-                      color: notifEnabled ? "#666" : "white",
-                    }}
-                  >
-                    {notifEnabled
-                      ? `🔕 Reminders on at ${notifTime} — tap to disable`
-                      : "🔔 Enable workout reminders"}
-                  </button>
-
-                  {notifEnabled && notifScheduled && (
-                    <div style={{ ...S.infoBox, background: "#e8f5e9", color: "#2e7d32", marginTop: 8 }}>
-                      ✓ Next reminder scheduled for {notifTime}
+                ) : (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                      <div>
+                        <div style={{ fontWeight: 600, fontSize: 14 }}>Reminder time</div>
+                        <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>Set 5 min before you want to start</div>
+                      </div>
+                      <input type="time" value={notifTime} onChange={e => { setNotifTime(e.target.value); store.set("notifTime", e.target.value); }}
+                        style={{ padding: "10px 12px", borderRadius: 10, border: "1px solid var(--border)", background: "var(--surface2)", color: "var(--text)", fontSize: 14, outline: "none", fontFamily: "var(--mono)" }}
+                      />
                     </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div style={S.card}>
-              <div style={S.sectionLabel}>📱 INSTALL AS APP</div>
-              <p style={{ fontSize: 13, color: "#666", marginTop: 8, lineHeight: 1.6 }}>
-                Add DadFit to your home screen for instant access — no app store needed.
-              </p>
-              <div style={{ ...S.infoBox, background: "#f0f4ff", color: "#1565c0", marginTop: 10 }}>
-                <strong>iPhone/iPad:</strong> Tap the Share button → "Add to Home Screen"
+                    <button onClick={notifEnabled ? () => { setNotifEnabled(false); store.set("notifEnabled", false); } : enableNotifs}
+                      style={{ width: "100%", padding: "13px", borderRadius: 12, border: notifEnabled ? "1px solid var(--border)" : "none", background: notifEnabled ? "var(--surface2)" : "var(--accent)", color: notifEnabled ? "var(--muted)" : "#000", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                      <Icon name="bell" size={15} color={notifEnabled ? "var(--muted)" : "#000"} />
+                      {notifEnabled ? `REMINDERS ON — ${notifTime} — TAP TO DISABLE` : "ENABLE REMINDERS"}
+                    </button>
+                  </>
+                )}
               </div>
-              <div style={{ ...S.infoBox, background: "#f0f4ff", color: "#1565c0", marginTop: 8 }}>
-                <strong>Android:</strong> Tap the menu (⋮) → "Add to Home Screen" or "Install App"
-              </div>
-            </div>
 
-            <div style={S.card}>
-              <div style={S.sectionLabel}>⚠️ RESET DATA</div>
-              <p style={{ fontSize: 13, color: "#666", marginTop: 8 }}>Clear all workout history and weight logs.</p>
-              <button
-                onClick={() => {
-                  if (window.confirm("Are you sure? This will clear all your progress.")) {
-                    storage.set("completedDays", {});
-                    storage.set("weights", []);
-                    setCompletedDays({});
-                    setWeights([]);
-                    setStreak(0);
-                    setTotalWorkouts(0);
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <Icon name="phone" size={18} color="var(--accent)" />
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)" }}>INSTALL AS APP</div>
+                </div>
+                {[
+                  { label: "iPhone", detail: "Safari → Share → Add to Home Screen" },
+                  { label: "Android", detail: "Chrome menu (⋮) → Add to Home Screen" },
+                ].map(p => (
+                  <div key={p.label} style={{ padding: "10px 14px", background: "var(--surface2)", borderRadius: 10, marginBottom: 8 }}>
+                    <div style={{ fontWeight: 600, fontSize: 13 }}>{p.label}</div>
+                    <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>{p.detail}</div>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, border: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <Icon name="refresh" size={18} color="#FF3B6B" />
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)" }}>RESET</div>
+                </div>
+                <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 12 }}>Clear all workout history and weight logs.</p>
+                <button onClick={() => {
+                  if (window.confirm("Reset all data? This can't be undone.")) {
+                    store.set("completedDays", {}); store.set("weights", []);
+                    setCompletedDays({}); setWeights({}); setStreak(0); setTotalWorkouts(0);
                   }
-                }}
-                style={{ ...S.btn, background: "#fff3f3", color: "#c62828", border: "1px solid #ffcdd2", marginTop: 12 }}
-              >
-                Reset all data
-              </button>
+                }} style={{ width: "100%", padding: "13px", borderRadius: 12, border: "1px solid #FF3B6B40", background: "#FF3B6B10", color: "#FF6B6B", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1 }}>
+                  RESET ALL DATA
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-
+          )}
+        </div>
       </div>
-
-      {/* Bottom safe area */}
-      <div style={{ height: 20 }} />
-    </div>
+    </>
   );
 }
-
-// ─── STYLES ──────────────────────────────────────────────────────────────────
-
-const styles = {
-  app: {
-    fontFamily: "'Georgia', serif",
-    background: "#f9f6f1",
-    minHeight: "100dvh",
-    maxWidth: 480,
-    margin: "0 auto",
-  },
-  header: {
-    background: "#1a1a2e",
-    color: "white",
-    padding: "env(safe-area-inset-top, 16px) 20px 20px",
-    paddingTop: "max(env(safe-area-inset-top), 16px)",
-  },
-  headerLabel: {
-    fontSize: 10, letterSpacing: 4, color: "#a0a0c0",
-    fontFamily: "monospace", marginBottom: 12,
-  },
-  headerStats: {
-    display: "flex", justifyContent: "space-between",
-    alignItems: "center",
-  },
-  stat: { display: "flex", flexDirection: "column", alignItems: "center", flex: 1 },
-  statVal: { fontSize: 18, fontWeight: 800, color: "#7dd3c0" },
-  statLbl: { fontSize: 8, letterSpacing: 1.5, color: "#6060a0", marginTop: 2, fontFamily: "monospace" },
-  statDivider: { width: 1, height: 32, background: "#2a2a4e" },
-  progressWrap: {
-    marginTop: 16, height: 5, background: "#2a2a4e",
-    borderRadius: 3, overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%", background: "linear-gradient(90deg, #7dd3c0, #2e7d32)",
-    borderRadius: 3, transition: "width 0.5s ease",
-  },
-  progressLabel: { fontSize: 10, color: "#6060a0", marginTop: 4, fontFamily: "monospace" },
-  tabs: {
-    display: "flex", background: "white",
-    borderBottom: "1px solid #ede9e0",
-    position: "sticky", top: 0, zIndex: 10,
-  },
-  tab: {
-    flex: 1, border: "none", background: "transparent",
-    cursor: "pointer", padding: "10px 4px",
-    display: "flex", flexDirection: "column",
-    alignItems: "center", gap: 2,
-    color: "#aaa", fontFamily: "monospace",
-    letterSpacing: 0.3, borderBottom: "3px solid transparent",
-    transition: "all 0.2s",
-  },
-  tabActive: {
-    color: "#1a1a2e", borderBottom: "3px solid #1a1a2e", fontWeight: 700,
-  },
-  content: { padding: "16px 14px" },
-  card: {
-    background: "white", borderRadius: 14,
-    padding: "16px", marginBottom: 12,
-    border: "1px solid #ede9e0",
-    boxShadow: "0 1px 4px rgba(0,0,0,0.04)",
-  },
-  sectionLabel: {
-    fontSize: 10, letterSpacing: 2, color: "#aaa",
-    fontFamily: "monospace", fontWeight: 700, marginBottom: 4,
-  },
-  infoBox: {
-    borderRadius: 8, padding: "9px 12px", fontSize: 12, lineHeight: 1.5,
-  },
-  exerciseRow: {
-    display: "flex", justifyContent: "space-between",
-    alignItems: "flex-start", padding: "8px 0",
-  },
-  exerciseName: { fontWeight: 600, fontSize: 14, color: "#1a1a2e" },
-  exerciseNote: { fontSize: 11, color: "#888", marginTop: 2 },
-  badge: {
-    fontSize: 11, fontFamily: "monospace", fontWeight: 700,
-    padding: "3px 8px", borderRadius: 6, whiteSpace: "nowrap", marginLeft: 10,
-  },
-  btn: {
-    width: "100%", padding: "14px",
-    borderRadius: 12, border: "none",
-    cursor: "pointer", fontSize: 14,
-    fontWeight: 700, letterSpacing: 0.5,
-    fontFamily: "monospace", transition: "all 0.2s",
-    display: "block",
-  },
-  hint: { color: "#888", fontSize: 13, marginBottom: 12 },
-};
