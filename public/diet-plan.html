@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Healthy Low-Sodium Diet Plan</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --green-deep: #2D5016;
+    --green-mid: #4A7C2F;
+    --green-fresh: #6BAF3C;
+    --green-light: #C8E6B0;
+    --green-pale: #EDF5E6;
+    --cream: #FAFAF7;
+    --text: #1C2B0F;
+    --text-muted: #5A6B4E;
+    --gold: #B8860B;
+    --gold-pale: #FFF8E1;
+    --shadow: 0 2px 16px rgba(45,80,22,0.10);
+    --radius: 16px;
+  }
+  body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--text); min-height: 100vh; }
+  header {
+    background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+    color: white; padding: 48px 24px 40px; text-align: center;
+  }
+  header h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: -0.5px; margin-bottom: 10px; }
+  header p { font-size: 0.95rem; font-weight: 300; opacity: 0.85; max-width: 480px; margin: 0 auto 24px; line-height: 1.6; }
+  .badges { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+  .badge { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.3px; }
+  .tabs { display: flex; justify-content: center; gap: 8px; padding: 28px 16px 0; flex-wrap: wrap; }
+  .tab-btn { background: white; border: 2px solid var(--green-light); color: var(--text-muted); border-radius: 30px; padding: 10px 22px; font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif; }
+  .tab-btn:hover { border-color: var(--green-fresh); color: var(--green-deep); }
+  .tab-btn.active { background: var(--green-deep); border-color: var(--green-deep); color: white; }
+  .content { max-width: 860px; margin: 0 auto; padding: 28px 16px 60px; }
+  .meal-section { display: none; }
+  .meal-section.active { display: block; }
+  .section-header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid var(--green-light); }
+  .meal-icon { width: 48px; height: 48px; background: var(--green-pale); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+  .section-header h2 { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--green-deep); }
+  .section-header span { font-size: 0.83rem; color: var(--text-muted); display: block; margin-top: 2px; }
+  .meals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; }
+  .meal-card { background: white; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); border: 1.5px solid transparent; transition: border-color 0.2s, transform 0.2s; cursor: pointer; }
+  .meal-card:hover { border-color: var(--green-fresh); transform: translateY(-2px); }
+  .meal-card.expanded { border-color: var(--green-mid); grid-column: 1 / -1; }
+  .card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .meal-name { font-family: 'DM Serif Display', serif; font-size: 1.15rem; color: var(--green-deep); line-height: 1.3; flex: 1; }
+  .badges-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+  .variant-num { background: var(--green-pale); color: var(--green-mid); font-size: 0.72rem; font-weight: 600; border-radius: 8px; padding: 3px 9px; white-space: nowrap; }
+  .cost-badge { background: var(--gold-pale); color: var(--gold); font-size: 0.72rem; font-weight: 600; border-radius: 8px; padding: 3px 9px; white-space: nowrap; border: 1px solid #f0d080; }
+  .meal-desc { font-size: 0.84rem; color: var(--text-muted); margin-top: 8px; line-height: 1.55; }
+  .macro-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .macro { background: var(--green-pale); border-radius: 8px; padding: 5px 10px; font-size: 0.75rem; color: var(--green-deep); font-weight: 500; }
+  .macro span { font-weight: 300; color: var(--text-muted); }
+  .expand-hint { font-size: 0.75rem; color: var(--green-fresh); margin-top: 12px; font-weight: 500; }
+  .meal-detail { display: none; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--green-light); grid-template-columns: 1fr 1fr; gap: 20px; }
+  .meal-card.expanded .meal-detail { display: grid; }
+  .detail-col h4 { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--green-mid); margin-bottom: 10px; }
+  .detail-col ul { list-style: none; padding: 0; }
+  .detail-col ul li { font-size: 0.85rem; color: var(--text); padding: 4px 0 4px 14px; position: relative; line-height: 1.5; }
+  .detail-col ul li::before { content: '•'; color: var(--green-fresh); position: absolute; left: 0; font-weight: bold; }
+  .tip-box { margin-top: 14px; background: var(--green-pale); border-left: 3px solid var(--green-fresh); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; grid-column: 1 / -1; }
+  .tip-box strong { color: var(--green-deep); }
+  .budget-box { margin-top: 10px; background: var(--gold-pale); border-left: 3px solid var(--gold); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: 0.82rem; color: #7a5c00; line-height: 1.5; grid-column: 1 / -1; }
+  .budget-box strong { color: var(--gold); }
+  .summary-bar { background: white; border-radius: var(--radius); padding: 20px 24px; box-shadow: var(--shadow); margin-bottom: 28px; display: flex; gap: 24px; flex-wrap: wrap; align-items: center; justify-content: space-between; border: 1.5px solid var(--green-light); }
+  .summary-item { text-align: center; }
+  .summary-item .val { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--green-deep); }
+  .summary-item .val.gold { color: var(--gold); }
+  .summary-item .lbl { font-size: 0.73rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; }
+  @media (max-width: 600px) {
+    .meal-detail { grid-template-columns: 1fr; }
+    .summary-bar { gap: 14px; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Budget Healthy Diet Plan</h1>
+  <p>Low-sodium, weight-loss meals built around affordable pantry staples — without sacrificing nutrition.</p>
+  <div class="badges">
+    <span class="badge">💰 Budget Friendly</span>
+    <span class="badge">⬇️ Weight Loss</span>
+    <span class="badge">🧂 Low Sodium</span>
+    <span class="badge">❤️ Heart Healthy</span>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('breakfast', this)">☀️ Breakfast</button>
+  <button class="tab-btn" onclick="showTab('lunch', this)">🥗 Lunch</button>
+  <button class="tab-btn" onclick="showTab('dinner', this)">🍽️ Dinner</button>
+  <button class="tab-btn" onclick="showTab('snacks', this)">🍎 Snacks</button>
+  <button class="tab-btn" onclick="showTab('tips', this)">💡 Tips</button>
+</div>
+
+<div class="content">
+
+<!-- ===== BREAKFAST ===== -->
+<div class="meal-section active" id="breakfast">
+  <div class="section-header">
+    <div class="meal-icon">☀️</div>
+    <div><h2>Breakfast</h2><span>Start strong · ~300–400 kcal · Under 300mg sodium</span></div>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item"><div class="val">~340</div><div class="lbl">Avg Calories</div></div>
+    <div class="summary-item"><div class="val">&lt;270mg</div><div class="lbl">Sodium</div></div>
+    <div class="summary-item"><div class="val gold">~$1.20</div><div class="lbl">Avg Cost/Meal</div></div>
+    <div class="summary-item"><div class="val">5</div><div class="lbl">Variants</div></div>
+  </div>
+  <div class="meals-grid">
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Porridge with Banana & Cinnamon</div>
+        <div class="badges-row"><div class="variant-num">V1</div><div class="cost-badge">~$0.60</div></div>
+      </div>
+      <div class="meal-desc">The ultimate budget breakfast — filling, fibre-rich oats sweetened naturally with banana.</div>
+      <div class="macro-row">
+        <div class="macro">~330 <span>kcal</span></div>
+        <div class="macro">10g <span>protein</span></div>
+        <div class="macro">~80mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>½ cup rolled oats (~$0.20)</li>
+            <li>1 cup water or low-fat milk (~$0.15)</li>
+            <li>1 banana, sliced (~$0.20)</li>
+            <li>½ tsp cinnamon (~$0.02)</li>
+            <li>1 tsp honey or a few raisins (optional)</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Combine oats and liquid in a saucepan</li>
+            <li>Cook over medium heat, stirring, 4–5 min</li>
+            <li>Pour into a bowl, top with sliced banana</li>
+            <li>Dust with cinnamon and serve</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Buy oats in bulk — a 1kg bag lasts weeks and costs very little per serve. Use water instead of milk to cut cost further without losing much nutrition.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Rolled oats are one of the most nutritious foods per dollar available. Avoid flavoured instant oat packets — they cost 3× more and are full of sugar and sodium.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Scrambled Eggs on Wholegrain Toast</div>
+        <div class="badges-row"><div class="variant-num">V2</div><div class="cost-badge">~$1.10</div></div>
+      </div>
+      <div class="meal-desc">High-protein, fast, and satisfying — eggs are the best value protein source available.</div>
+      <div class="macro-row">
+        <div class="macro">~350 <span>kcal</span></div>
+        <div class="macro">22g <span>protein</span></div>
+        <div class="macro">~220mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>3 eggs (~$0.75)</li>
+            <li>1 slice low-sodium wholegrain bread (~$0.20)</li>
+            <li>1 tsp olive oil or butter (~$0.05)</li>
+            <li>Black pepper, garlic powder, fresh parsley</li>
+            <li>Optional: ½ tomato, sliced alongside</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Whisk eggs with pepper and garlic powder</li>
+            <li>Cook slowly in a pan on low heat, folding gently</li>
+            <li>Remove just before fully set — residual heat finishes them</li>
+            <li>Serve on toast with fresh parsley and tomato</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Low and slow is the key to creamy scrambled eggs. High heat gives you rubbery eggs. Season with herbs and pepper — no salt needed.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> A dozen eggs costs very little and provides 12 high-quality protein servings. Buy the largest carton available for the best per-egg price.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Overnight Oats with Frozen Berries</div>
+        <div class="badges-row"><div class="variant-num">V3</div><div class="cost-badge">~$0.90</div></div>
+      </div>
+      <div class="meal-desc">Zero morning effort — prep takes 2 minutes the night before. Frozen berries cost a fraction of fresh.</div>
+      <div class="macro-row">
+        <div class="macro">~340 <span>kcal</span></div>
+        <div class="macro">12g <span>protein</span></div>
+        <div class="macro">~95mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>½ cup rolled oats (~$0.20)</li>
+            <li>¾ cup low-fat milk or water (~$0.15)</li>
+            <li>⅓ cup frozen mixed berries (~$0.40)</li>
+            <li>1 tsp chia seeds (optional, ~$0.10)</li>
+            <li>½ tsp cinnamon, pinch of nutmeg</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Mix oats, milk, cinnamon, and chia in a jar or bowl</li>
+            <li>Add frozen berries on top (they thaw overnight)</li>
+            <li>Cover and refrigerate overnight</li>
+            <li>Stir in the morning and eat cold or microwave 1 min</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Frozen berries are just as nutritious as fresh — often more so, since they're frozen at peak ripeness. They cost 3–4× less than fresh.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Make 3–4 jars at once on Sunday. Stack them in the fridge for grab-and-go breakfasts all week with zero extra effort.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Banana Oat Pancakes (2-Ingredient)</div>
+        <div class="badges-row"><div class="variant-num">V4</div><div class="cost-badge">~$0.80</div></div>
+      </div>
+      <div class="meal-desc">Just banana and egg — naturally sweet, gluten-free pancakes with zero added sugar or salt.</div>
+      <div class="macro-row">
+        <div class="macro">~310 <span>kcal</span></div>
+        <div class="macro">14g <span>protein</span></div>
+        <div class="macro">~110mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>1 ripe banana (~$0.20)</li>
+            <li>2 eggs (~$0.50)</li>
+            <li>2 tbsp rolled oats (~$0.05, optional for texture)</li>
+            <li>½ tsp cinnamon</li>
+            <li>Cooking spray or tiny drop of oil</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Mash banana thoroughly in a bowl</li>
+            <li>Whisk in eggs and cinnamon (and oats if using)</li>
+            <li>Cook small rounds in a lightly oiled pan on medium-low</li>
+            <li>Flip when bubbles form and edges look set (~2 min each side)</li>
+            <li>Top with more banana or a drizzle of honey</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Use the ripest, most spotted banana you have — the riper it is, the sweeter and easier to mash. These don't flip like regular pancakes; be patient and use a thin spatula.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> This whole meal costs under a dollar. It's a great way to use bananas that are too ripe to eat on their own.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Yogurt with Oats, Apple & Honey</div>
+        <div class="badges-row"><div class="variant-num">V5</div><div class="cost-badge">~$1.20</div></div>
+      </div>
+      <div class="meal-desc">A simple, no-cook assembly using cheap plain yogurt — skip Greek yogurt to save money.</div>
+      <div class="macro-row">
+        <div class="macro">~350 <span>kcal</span></div>
+        <div class="macro">14g <span>protein</span></div>
+        <div class="macro">~130mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>¾ cup plain low-fat yogurt (~$0.60)</li>
+            <li>3 tbsp rolled oats (~$0.10)</li>
+            <li>½ apple, diced (~$0.30)</li>
+            <li>1 tsp honey (~$0.10)</li>
+            <li>Pinch of cinnamon</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Spoon yogurt into a bowl</li>
+            <li>Stir in raw oats (they soften quickly in yogurt)</li>
+            <li>Top with diced apple and drizzle honey</li>
+            <li>Dust with cinnamon and serve</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Plain yogurt (not Greek) is significantly cheaper and still provides good protein and probiotics. Buy the large tub, not individual portions.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Buy yogurt in 1kg tubs — it's often 4× cheaper per gram than individual pots. Store with a spoon in the container and portion daily.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== LUNCH ===== -->
+<div class="meal-section" id="lunch">
+  <div class="section-header">
+    <div class="meal-icon">🥗</div>
+    <div><h2>Lunch</h2><span>Sustain energy · ~400–500 kcal · Under 400mg sodium</span></div>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item"><div class="val">~430</div><div class="lbl">Avg Calories</div></div>
+    <div class="summary-item"><div class="val">&lt;360mg</div><div class="lbl">Sodium</div></div>
+    <div class="summary-item"><div class="val gold">~$1.80</div><div class="lbl">Avg Cost/Meal</div></div>
+    <div class="summary-item"><div class="val">5</div><div class="lbl">Variants</div></div>
+  </div>
+  <div class="meals-grid">
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Lentil & Vegetable Soup</div>
+        <div class="badges-row"><div class="variant-num">V1</div><div class="cost-badge">~$1.20</div></div>
+      </div>
+      <div class="meal-desc">A hearty, protein-packed soup that batch-cooks beautifully — costs cents per bowl.</div>
+      <div class="macro-row">
+        <div class="macro">~380 <span>kcal</span></div>
+        <div class="macro">20g <span>protein</span></div>
+        <div class="macro">~220mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>½ cup dried red lentils (~$0.30)</li>
+            <li>1 carrot, 1 celery stalk, ½ onion (~$0.30)</li>
+            <li>1 cup no-added-salt canned tomatoes (~$0.40)</li>
+            <li>2 cups water or homemade stock (~$0.05)</li>
+            <li>1 tsp cumin, ½ tsp turmeric, black pepper</li>
+            <li>1 tsp olive oil</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Sauté onion, carrot, celery in oil until soft</li>
+            <li>Add spices and cook 1 min</li>
+            <li>Add lentils, tomatoes, and water</li>
+            <li>Simmer 20–25 min until lentils are soft</li>
+            <li>Blend partially or serve chunky with a squeeze of lemon</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Use water instead of stock to control sodium completely. Boost flavour with extra spices — cumin, turmeric, and smoked paprika are powerful and cheap.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> A 500g bag of dried lentils costs very little and makes 8–10 servings. This is one of the cheapest and most nutritious meals you can make.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Egg & Vegetable Fried Rice</div>
+        <div class="badges-row"><div class="variant-num">V2</div><div class="cost-badge">~$1.40</div></div>
+      </div>
+      <div class="meal-desc">Use leftover rice and frozen veg for a fast, filling lunch that comes together in 10 minutes.</div>
+      <div class="macro-row">
+        <div class="macro">~420 <span>kcal</span></div>
+        <div class="macro">18g <span>protein</span></div>
+        <div class="macro">~310mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>¾ cup cooked brown rice (~$0.20)</li>
+            <li>2 eggs (~$0.50)</li>
+            <li>½ cup frozen mixed veg (peas, corn, carrot) (~$0.30)</li>
+            <li>1 garlic clove, ½ tsp ginger</li>
+            <li>1 tsp low-sodium soy sauce or tamari (~$0.10)</li>
+            <li>1 tsp sesame oil or vegetable oil (~$0.05)</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Heat oil in a pan or wok over high heat</li>
+            <li>Add garlic and ginger, stir 30 seconds</li>
+            <li>Add frozen veg and cook until thawed</li>
+            <li>Push to the side, scramble eggs in the gap</li>
+            <li>Mix everything together with rice and soy sauce</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Cold leftover rice fries much better than freshly cooked rice — it's drier and the grains stay separate. Cook a big batch of rice on Sunday.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Frozen mixed vegetables cost a fraction of fresh and have near-identical nutrition. A 1kg bag lasts all week and forms the base of multiple meals.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Chickpea & Spinach Stew</div>
+        <div class="badges-row"><div class="variant-num">V3</div><div class="cost-badge">~$1.30</div></div>
+      </div>
+      <div class="meal-desc">A thick, warming stew bursting with plant protein, iron, and bold spice — on the table in 20 minutes.</div>
+      <div class="macro-row">
+        <div class="macro">~400 <span>kcal</span></div>
+        <div class="macro">18g <span>protein</span></div>
+        <div class="macro">~230mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>1 can chickpeas, rinsed (~$0.60)</li>
+            <li>1 cup frozen or fresh spinach (~$0.30)</li>
+            <li>½ can no-added-salt diced tomatoes (~$0.30)</li>
+            <li>½ onion, 2 garlic cloves (~$0.10)</li>
+            <li>1 tsp cumin, 1 tsp smoked paprika, chilli flakes</li>
+            <li>1 tsp olive oil, squeeze of lemon</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Sauté onion and garlic in oil until golden</li>
+            <li>Add spices and stir 1 min</li>
+            <li>Add chickpeas and tomatoes, simmer 10 min</li>
+            <li>Stir in spinach until wilted</li>
+            <li>Finish with lemon juice, serve with bread or rice</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Always rinse canned chickpeas under cold water — this washes away up to 40% of the sodium from the brine. It takes 10 seconds and makes a real difference.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Canned chickpeas are one of the best value protein sources. Pair with the cheapest bread you can find (check it's low-sodium) to round out the meal.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Tuna, Rice & Cucumber Bowl</div>
+        <div class="badges-row"><div class="variant-num">V4</div><div class="cost-badge">~$2.00</div></div>
+      </div>
+      <div class="meal-desc">Canned tuna in spring water is one of the cheapest lean proteins — turns leftover rice into a satisfying bowl.</div>
+      <div class="macro-row">
+        <div class="macro">~440 <span>kcal</span></div>
+        <div class="macro">34g <span>protein</span></div>
+        <div class="macro">~310mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>95g canned tuna in spring water, no added salt (~$1.20)</li>
+            <li>¾ cup cooked brown rice (~$0.20)</li>
+            <li>½ cucumber, sliced (~$0.30)</li>
+            <li>½ tomato or a handful of cherry tomatoes (~$0.20)</li>
+            <li>1 tsp olive oil, lemon juice, black pepper, dill</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Drain and rinse tuna well under cold water</li>
+            <li>Flake into a bowl with olive oil, lemon, pepper, dill</li>
+            <li>Add rice to one side, veg to the other</li>
+            <li>Drizzle everything with a little extra lemon</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Buy "tuna in spring water, no added salt" — regular canned tuna can have 300–400mg sodium per can. Rinsing it further reduces sodium by another 25%.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Buy canned tuna in bulk multipacks — the per-can price drops significantly. A can provides 20–25g of protein for well under $2.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Bean & Vegetable Wrap</div>
+        <div class="badges-row"><div class="variant-num">V5</div><div class="cost-badge">~$1.60</div></div>
+      </div>
+      <div class="meal-desc">A filling hand-held lunch using canned beans and whatever vegetables you have on hand.</div>
+      <div class="macro-row">
+        <div class="macro">~430 <span>kcal</span></div>
+        <div class="macro">18g <span>protein</span></div>
+        <div class="macro">~330mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>1 wholegrain wrap or flatbread (~$0.40)</li>
+            <li>½ cup canned black or kidney beans, rinsed (~$0.40)</li>
+            <li>Spinach or lettuce (~$0.20)</li>
+            <li>Tomato, cucumber, grated carrot (~$0.30)</li>
+            <li>2 tbsp plain yogurt (instead of sour cream)</li>
+            <li>Cumin, smoked paprika, lime juice, hot sauce (optional)</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Rinse and lightly mash beans with cumin and paprika</li>
+            <li>Warm wrap briefly in a pan or microwave</li>
+            <li>Spread yogurt, then layer beans and veg</li>
+            <li>Squeeze lime juice over filling</li>
+            <li>Fold tightly and slice in half</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Plain yogurt is a great low-sodium swap for sour cream or mayo. It costs less, has more protein, and is much lower in fat and sodium.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Canned beans are nutritionally comparable to dried beans but require no soaking or cooking time. Rinse them well and they become a near-zero-sodium protein source.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== DINNER ===== -->
+<div class="meal-section" id="dinner">
+  <div class="section-header">
+    <div class="meal-icon">🍽️</div>
+    <div><h2>Dinner</h2><span>Nourishing close · ~450–550 kcal · Under 450mg sodium</span></div>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item"><div class="val">~480</div><div class="lbl">Avg Calories</div></div>
+    <div class="summary-item"><div class="val">&lt;400mg</div><div class="lbl">Sodium</div></div>
+    <div class="summary-item"><div class="val gold">~$2.50</div><div class="lbl">Avg Cost/Meal</div></div>
+    <div class="summary-item"><div class="val">5</div><div class="lbl">Variants</div></div>
+  </div>
+  <div class="meals-grid">
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Chicken Thigh, Roasted Veg & Brown Rice</div>
+        <div class="badges-row"><div class="variant-num">V1</div><div class="cost-badge">~$2.80</div></div>
+      </div>
+      <div class="meal-desc">Chicken thighs cost far less than breast and are juicier. Roast with seasonal veg for a complete meal.</div>
+      <div class="macro-row">
+        <div class="macro">~500 <span>kcal</span></div>
+        <div class="macro">38g <span>protein</span></div>
+        <div class="macro">~280mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>2 chicken thighs, skin removed (~$1.80)</li>
+            <li>1 cup mixed veg (whatever's cheap: pumpkin, zucchini, capsicum) (~$0.50)</li>
+            <li>¾ cup cooked brown rice (~$0.20)</li>
+            <li>1 tbsp olive oil</li>
+            <li>Garlic, rosemary or mixed herbs, black pepper, lemon</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Rub chicken with olive oil, garlic, herbs, lemon zest, and pepper</li>
+            <li>Place on a tray with veg chunks tossed in oil</li>
+            <li>Roast at 200°C for 35–40 min</li>
+            <li>Serve over brown rice with a squeeze of lemon</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Remove the skin to reduce fat and sodium. Use whatever vegetables are cheapest that week — root veg (pumpkin, kumara, carrot) roast beautifully and cost very little.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Chicken thighs cost roughly half the price of chicken breast and are harder to overcook. Buy in family packs and freeze portions you won't use within 2 days.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Red Lentil Dahl with Rice</div>
+        <div class="badges-row"><div class="variant-num">V2</div><div class="cost-badge">~$1.40</div></div>
+      </div>
+      <div class="meal-desc">A deeply satisfying, fully plant-based dinner — fragrant, spiced, and extremely cheap to make.</div>
+      <div class="macro-row">
+        <div class="macro">~470 <span>kcal</span></div>
+        <div class="macro">22g <span>protein</span></div>
+        <div class="macro">~180mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>½ cup red lentils (~$0.30)</li>
+            <li>¾ cup cooked brown rice (~$0.20)</li>
+            <li>½ onion, 2 garlic cloves, 1 tsp fresh ginger (~$0.15)</li>
+            <li>½ cup no-added-salt diced tomatoes (~$0.25)</li>
+            <li>1 tsp cumin, 1 tsp turmeric, 1 tsp garam masala (~$0.10)</li>
+            <li>1 tsp olive oil, lemon juice, fresh coriander</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Sauté onion, garlic, ginger in oil until golden</li>
+            <li>Add spices and stir 1–2 min</li>
+            <li>Add rinsed lentils, tomatoes, and 1.5 cups water</li>
+            <li>Simmer 20 min until lentils are thick and soft</li>
+            <li>Finish with lemon juice and coriander, serve over rice</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> The key to great dahl is toasting your spices in oil before adding liquid — this "blooms" the flavours and makes the dish taste restaurant-quality with no salt needed.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> This meal costs under $1.50 for a generous, filling serve. Make double and refrigerate — dahl improves overnight as the spices develop further.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Baked Potato with Cottage Cheese & Salad</div>
+        <div class="badges-row"><div class="variant-num">V3</div><div class="cost-badge">~$1.60</div></div>
+      </div>
+      <div class="meal-desc">A baked potato with low-sodium cottage cheese is incredibly filling, high-protein, and costs very little.</div>
+      <div class="macro-row">
+        <div class="macro">~450 <span>kcal</span></div>
+        <div class="macro">24g <span>protein</span></div>
+        <div class="macro">~290mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>1 large potato (~$0.40)</li>
+            <li>½ cup low-fat cottage cheese (~$0.60)</li>
+            <li>Mixed salad leaves (~$0.30)</li>
+            <li>Tomato, cucumber (~$0.20)</li>
+            <li>Black pepper, chives or spring onion, lemon juice</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Scrub potato, prick all over with a fork</li>
+            <li>Bake at 200°C for 50–60 min until soft inside, or microwave 8–10 min</li>
+            <li>Mix cottage cheese with pepper and chives</li>
+            <li>Split potato, spoon in cottage cheese</li>
+            <li>Serve with dressed side salad</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Choose low-fat cottage cheese rather than sour cream or cheese — it has significantly more protein and much less fat and sodium. Check labels for sodium as it varies by brand.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> Potatoes are one of the most underrated budget foods — high in potassium (great for blood pressure), filling, and versatile. Buy a large bag for maximum savings.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Egg & Vegetable Frittata</div>
+        <div class="badges-row"><div class="variant-num">V4</div><div class="cost-badge">~$1.80</div></div>
+      </div>
+      <div class="meal-desc">A one-pan dinner using eggs and whatever veg you have — delicious hot or cold, great for leftovers.</div>
+      <div class="macro-row">
+        <div class="macro">~420 <span>kcal</span></div>
+        <div class="macro">28g <span>protein</span></div>
+        <div class="macro">~320mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>4 eggs (~$1.00)</li>
+            <li>½ cup frozen peas or corn (~$0.20)</li>
+            <li>½ onion, ½ capsicum, 1 small potato (pre-cooked) (~$0.30)</li>
+            <li>Handful of spinach (~$0.20)</li>
+            <li>1 tsp olive oil</li>
+            <li>Black pepper, garlic powder, mixed dried herbs</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Sauté onion, capsicum, and potato in an oven-safe pan</li>
+            <li>Add peas and spinach, stir through</li>
+            <li>Whisk eggs with pepper and herbs, pour over veg</li>
+            <li>Cook on stovetop 3 min until edges set</li>
+            <li>Transfer to oven at 180°C for 10–12 min until fully set</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Use any vegetables you have — this is a great "use it up" meal. Leftover roasted veg, frozen corn, mushrooms, or cooked sweet potato all work perfectly.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> A frittata uses cheap eggs as the main protein and stretches them with veg. Make a larger one and eat slices for lunch the next day — zero extra cost.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Bean & Vegetable Stir-Fry with Rice</div>
+        <div class="badges-row"><div class="variant-num">V5</div><div class="cost-badge">~$1.50</div></div>
+      </div>
+      <div class="meal-desc">Fast, filling, and plant-based — frozen veg and canned beans make this a 15-minute weeknight winner.</div>
+      <div class="macro-row">
+        <div class="macro">~460 <span>kcal</span></div>
+        <div class="macro">20g <span>protein</span></div>
+        <div class="macro">~290mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for ingredients & method →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>Ingredients</h4>
+          <ul>
+            <li>½ cup canned cannellini or kidney beans, rinsed (~$0.40)</li>
+            <li>¾ cup cooked brown rice (~$0.20)</li>
+            <li>1 cup frozen stir-fry veg mix (~$0.40)</li>
+            <li>1 garlic clove, ½ tsp ginger</li>
+            <li>1 tsp low-sodium soy sauce, 1 tsp sesame oil</li>
+            <li>Spring onion, lime juice, chilli flakes</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Heat sesame oil in a wok or pan on high heat</li>
+            <li>Add garlic and ginger, stir 30 seconds</li>
+            <li>Add frozen veg and stir-fry 4–5 min</li>
+            <li>Add beans and rice, toss well</li>
+            <li>Splash in soy sauce, finish with lime and spring onion</li>
+          </ul>
+        </div>
+        <div class="tip-box"><strong>Tip:</strong> Frozen stir-fry vegetable mixes are one of the best budget buys — pre-cut, pre-portioned, long shelf life, and just as nutritious as fresh.</div>
+        <div class="budget-box"><strong>Budget Win:</strong> This whole meal costs under $1.50. Beans replace meat entirely here and provide excellent plant protein. Use reduced-sodium tamari to keep sodium in check.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== SNACKS ===== -->
+<div class="meal-section" id="snacks">
+  <div class="section-header">
+    <div class="meal-icon">🍎</div>
+    <div><h2>Snacks</h2><span>Bridge the gaps · ~100–180 kcal · Under 120mg sodium</span></div>
+  </div>
+  <div class="summary-bar">
+    <div class="summary-item"><div class="val">~140</div><div class="lbl">Avg Calories</div></div>
+    <div class="summary-item"><div class="val">&lt;110mg</div><div class="lbl">Sodium</div></div>
+    <div class="summary-item"><div class="val gold">~$0.50</div><div class="lbl">Avg Cost/Snack</div></div>
+    <div class="summary-item"><div class="val">5</div><div class="lbl">Variants</div></div>
+  </div>
+  <div class="meals-grid">
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Banana with a Boiled Egg</div>
+        <div class="badges-row"><div class="variant-num">V1</div><div class="cost-badge">~$0.45</div></div>
+      </div>
+      <div class="meal-desc">The perfect combo of natural sugar, fibre, and protein — prepped in advance, zero fuss.</div>
+      <div class="macro-row">
+        <div class="macro">~160 <span>kcal</span></div>
+        <div class="macro">8g <span>protein</span></div>
+        <div class="macro">~70mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for details →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>What you need</h4>
+          <ul>
+            <li>1 banana (~$0.20)</li>
+            <li>1 hard-boiled egg (~$0.25)</li>
+            <li>Crack of black pepper on the egg</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Why it works</h4>
+          <ul>
+            <li>Banana potassium actively lowers blood pressure</li>
+            <li>Egg protein keeps you full until the next meal</li>
+            <li>Naturally very low in sodium</li>
+            <li>Pre-boil 6 eggs Sunday — grab one daily all week</li>
+          </ul>
+        </div>
+        <div class="budget-box"><strong>Budget Win:</strong> This snack costs under 50 cents. Bananas and eggs are two of the cheapest nutritious foods available — keep both stocked at all times.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Apple with Peanut Butter</div>
+        <div class="badges-row"><div class="variant-num">V2</div><div class="cost-badge">~$0.60</div></div>
+      </div>
+      <div class="meal-desc">Classic for a reason — fibre + healthy fats = lasting energy with no blood sugar crash.</div>
+      <div class="macro-row">
+        <div class="macro">~180 <span>kcal</span></div>
+        <div class="macro">4g <span>protein</span></div>
+        <div class="macro">~15mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for details →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>What you need</h4>
+          <ul>
+            <li>1 apple (~$0.40)</li>
+            <li>1 tbsp natural peanut butter, no added salt (~$0.20)</li>
+            <li>Optional: pinch of cinnamon</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Why it works</h4>
+          <ul>
+            <li>Peanut butter is the most affordable nut butter</li>
+            <li>Fibre in apple slows sugar absorption</li>
+            <li>Healthy fats provide sustained satiety</li>
+            <li>Virtually zero sodium if you choose no-added-salt PB</li>
+          </ul>
+        </div>
+        <div class="budget-box"><strong>Budget Win:</strong> Natural peanut butter is one of the cheapest sources of healthy fats and plant protein. Always check it has no added salt — it's often the same price as the salted version.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Carrot Sticks with Homemade Hummus</div>
+        <div class="badges-row"><div class="variant-num">V3</div><div class="cost-badge">~$0.55</div></div>
+      </div>
+      <div class="meal-desc">Crunchy, satisfying, and almost zero sodium when you make hummus yourself — it takes 5 minutes.</div>
+      <div class="macro-row">
+        <div class="macro">~150 <span>kcal</span></div>
+        <div class="macro">6g <span>protein</span></div>
+        <div class="macro">~60mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for details →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>What you need</h4>
+          <ul>
+            <li>1–2 carrots, cut into sticks (~$0.20)</li>
+            <li>3 tbsp hummus (homemade: blitz rinsed chickpeas + lemon + garlic + olive oil) (~$0.35)</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Why it works</h4>
+          <ul>
+            <li>Homemade hummus has a fraction of store-bought sodium</li>
+            <li>Carrots are one of the cheapest vegetables available</li>
+            <li>Chickpea protein and fibre curbs hunger effectively</li>
+          </ul>
+        </div>
+        <div class="budget-box"><strong>Budget Win:</strong> Store-bought hummus is expensive and high in sodium. A can of chickpeas + lemon + garlic + olive oil makes 8+ servings of hummus for the same price as one small store-bought tub.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Oat & Banana Energy Balls</div>
+        <div class="badges-row"><div class="variant-num">V4</div><div class="cost-badge">~$0.30</div></div>
+      </div>
+      <div class="meal-desc">Batch-make these no-bake bites on Sunday — they last all week and cost almost nothing per serve.</div>
+      <div class="macro-row">
+        <div class="macro">~160 <span>kcal</span></div>
+        <div class="macro">4g <span>protein</span></div>
+        <div class="macro">~20mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for details →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>What you need (makes ~10 balls)</h4>
+          <ul>
+            <li>1 cup rolled oats (~$0.40)</li>
+            <li>2 ripe bananas (~$0.40)</li>
+            <li>1 tbsp peanut butter (~$0.20)</li>
+            <li>½ tsp cinnamon</li>
+            <li>Optional: raisins, sunflower seeds</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Method</h4>
+          <ul>
+            <li>Mash bananas well, mix in oats, PB, and cinnamon</li>
+            <li>Roll into small balls (~2 tbsp each)</li>
+            <li>Refrigerate 30 min to firm up</li>
+            <li>Store in the fridge up to 5 days</li>
+          </ul>
+        </div>
+        <div class="budget-box"><strong>Budget Win:</strong> The whole batch of 10 costs under $1.00 — that's about 10 cents per snack. Perfect for a week of grab-and-go snacking with zero sodium concerns.</div>
+      </div>
+    </div>
+
+    <div class="meal-card" onclick="toggle(this)">
+      <div class="card-top">
+        <div class="meal-name">Plain Yogurt with a Drizzle of Honey</div>
+        <div class="badges-row"><div class="variant-num">V5</div><div class="cost-badge">~$0.55</div></div>
+      </div>
+      <div class="meal-desc">Simple, protein-rich, and satisfying — the ultimate low-effort snack from a large tub of plain yogurt.</div>
+      <div class="macro-row">
+        <div class="macro">~130 <span>kcal</span></div>
+        <div class="macro">10g <span>protein</span></div>
+        <div class="macro">~80mg <span>sodium</span></div>
+      </div>
+      <div class="expand-hint">Tap for details →</div>
+      <div class="meal-detail">
+        <div class="detail-col">
+          <h4>What you need</h4>
+          <ul>
+            <li>½ cup plain low-fat yogurt from a large tub (~$0.45)</li>
+            <li>1 tsp honey (~$0.10)</li>
+            <li>Optional: pinch of cinnamon or a few frozen berries</li>
+          </ul>
+        </div>
+        <div class="detail-col">
+          <h4>Why it works</h4>
+          <ul>
+            <li>Protein and probiotics from yogurt</li>
+            <li>Honey adds sweetness without processed sugar</li>
+            <li>Takes 30 seconds to prepare</li>
+            <li>Large tub keeps cost very low</li>
+          </ul>
+        </div>
+        <div class="budget-box"><strong>Budget Win:</strong> A 1kg tub of plain yogurt gives you ~8 snack servings. That's well under $1 per snack and provides more protein than most packaged snack foods.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== TIPS ===== -->
+<div class="meal-section" id="tips">
+  <div class="section-header">
+    <div class="meal-icon">💡</div>
+    <div><h2>Budget & Health Tips</h2><span>Eat well for less, every day</span></div>
+  </div>
+  <div class="meals-grid">
+    <div class="meal-card" style="cursor:default; border-color: var(--green-light);">
+      <div class="meal-name" style="font-size:1rem; margin-bottom:10px;">💰 The Budget Staples List</div>
+      <div class="meal-desc" style="font-size:0.83rem; line-height:1.7;">
+        Build every shop around these: <strong>eggs, rolled oats, brown rice, dried lentils, canned chickpeas/beans (no added salt), plain yogurt (large tub), frozen mixed vegetables, frozen berries, bananas, carrots, potatoes, canned tomatoes (no added salt), peanut butter (no added salt), olive oil.</strong> These 15 items cover almost every meal in this plan and cost very little per serve.
+      </div>
+    </div>
+    <div class="meal-card" style="cursor:default; border-color: var(--green-light);">
+      <div class="meal-name" style="font-size:1rem; margin-bottom:10px;">🧂 Flavour Without Salt</div>
+      <div class="meal-desc" style="font-size:0.83rem; line-height:1.7;">
+        The cheapest flavour boosters are also the healthiest: <strong>garlic, onion, ginger, lemon juice, cumin, turmeric, smoked paprika, cinnamon, black pepper, chilli flakes, dried herbs (oregano, thyme, mixed herbs).</strong> Buy these in large bags from the bulk or international food aisle — they cost a fraction of branded spice jars.
+      </div>
+    </div>
+    <div class="meal-card" style="cursor:default; border-color: var(--green-light);">
+      <div class="meal-name" style="font-size:1rem; margin-bottom:10px;">📅 Sunday Batch Prep</div>
+      <div class="meal-desc" style="font-size:0.83rem; line-height:1.7;">
+        Spend 60 minutes on Sunday: cook a big pot of brown rice, boil 6 eggs, make a batch of lentil soup or dahl, prep overnight oats for 3 days, and make a batch of oat energy balls. This gives you <strong>breakfasts, lunches, dinners, and snacks ready to go all week</strong> — and removes the temptation to buy expensive, salty convenience food when you're tired.
+      </div>
+    </div>
+    <div class="meal-card" style="cursor:default; border-color: var(--green-light);">
+      <div class="meal-name" style="font-size:1rem; margin-bottom:10px;">🛒 Smart Shopping Rules</div>
+      <div class="meal-desc" style="font-size:0.83rem; line-height:1.7;">
+        <strong>Always buy:</strong> frozen over fresh for berries and mixed veg (same nutrition, 3–4× cheaper), large tubs over individual portions of yogurt, bulk bags over small packets for oats/rice/lentils, seasonal produce (it's cheaper and fresher). <strong>Always check sodium labels:</strong> aim for &lt;120mg per 100g. The words "no added salt" on canned goods are your best friends.
+      </div>
+    </div>
+    <div class="meal-card" style="cursor:default; border-color: var(--green-light);">
+      <div class="meal-name" style="font-size:1rem; margin-bottom:10px;">⚖️ Daily Cost & Calorie Summary</div>
+      <div class="meal-desc" style="font-size:0.83rem; line-height:1.7;">
+        This plan averages <strong>~$5–7 per day</strong> for all meals (breakfast + lunch + dinner + 1–2 snacks) and <strong>~1,400–1,600 kcal</strong>. Sodium stays well under <strong>1,200mg/day</strong> — below the 1,500mg recommended limit for blood pressure management. For weight loss, aim for a 300–500 kcal deficit from your maintenance level. Drink 2–3 litres of water daily.
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.meal-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+  function toggle(card) {
+    const wasExpanded = card.classList.contains('expanded');
+    card.closest('.meals-grid').querySelectorAll('.meal-card').forEach(c => c.classList.remove('expanded'));
+    if (!wasExpanded) card.classList.add('expanded');
+    const hint = card.querySelector('.expand-hint');
+    if (hint) hint.textContent = card.classList.contains('expanded') ? 'Tap to collapse ↑' : 'Tap for ingredients & method →';
+  }
+</script>
+</body>
+</html>
