@@ -536,6 +536,14 @@ export default function App() {
           {/* MEALS */}
           {tab === "meals" && (
             <div>
+              <a href="/diet-plan.html" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#C8FF0012", borderRadius: 14, padding: "14px 16px", marginBottom: 12, border: "1px solid #C8FF0030", textDecoration: "none", cursor: "pointer" }}>
+                <div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "#C8FF00", marginBottom: 4 }}>NEW</div>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: "var(--text)" }}>Budget Diet Plan</div>
+                  <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>Low-sodium · Weight loss · ~$6/day</div>
+                </div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 18, color: "#C8FF00" }}>→</div>
+              </a>
               <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 16, border: "1px solid var(--border)", display: "flex", justifyContent: "space-between" }}>
                 {[["Daily Target", `~${plan.targetCal} kcal`], ["Protein", `~${plan.proteinG}g`], ["Deficit", `~${plan.dailyDeficit} kcal`]].map(([l, v]) => (
                   <div key={l}><div style={{ fontSize: 15, fontWeight: 700, color: "var(--accent)" }}>{v}</div><div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1, color: "var(--muted)", marginTop: 2 }}>{l.toUpperCase()}</div></div>
