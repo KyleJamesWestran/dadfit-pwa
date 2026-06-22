@@ -26,7 +26,7 @@ const Icon = ({ name, size = 20, color = "currentColor", strokeWidth = 1.75 }) =
     refresh: <><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></>,
     edit: <><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
     user: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></>,
-    target: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>,</>,
+    target: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></>,
     droplet: <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>,
   };
   return (
@@ -70,37 +70,147 @@ function QuoteBanner() {
   );
 }
 
-// ── Workout Data ──────────────────────────────────────────────────────────────
-const DAYS = [
-  { day: "Monday", short: "MON", type: "workout", label: "Upper Body", time: "6:00 – 6:25am", tag: "STRENGTH", ai: 0,
-    warmup: "3 min — arm circles, shoulder rolls, jumping jacks", cooldown: "2 min — chest stretch, band pull-apart",
-    exercises: [{ name: "Push-ups", sets: "4 × 10", note: "Knees ok to start" }, { name: "Dumbbell Shoulder Press", sets: "3 × 12", note: "Seated or standing" }, { name: "Band Rows", sets: "4 × 12", note: "Anchor band to door" }, { name: "Dumbbell Bicep Curls", sets: "3 × 10", note: "Slow on the way down" }, { name: "Tricep Band Pushdowns", sets: "3 × 12", note: "" }] },
-  { day: "Tuesday", short: "TUE", type: "rest", label: "Active Rest", time: "Lunch walk", tag: "REST", ai: 1, note: "10–15 min walk at lunch. Drink extra water." },
-  { day: "Wednesday", short: "WED", type: "workout", label: "Lower Body", time: "6:00 – 6:25am", tag: "STRENGTH", ai: 0,
-    warmup: "3 min — leg swings, hip circles, bodyweight squats", cooldown: "2 min — hip flexor stretch, hamstring stretch",
-    exercises: [{ name: "Goblet Squats", sets: "4 × 12", note: "Hold one dumbbell at chest" }, { name: "Romanian Deadlifts", sets: "4 × 10", note: "Hinge at hips, soft knees" }, { name: "Dumbbell Lunges", sets: "3 × 10 each", note: "Alternate legs" }, { name: "Glute Bridges", sets: "3 × 15", note: "Add dumbbell on hips for challenge" }, { name: "Band Lateral Walks", sets: "3 × 12 each way", note: "Band around ankles" }] },
-  { day: "Thursday", short: "THU", type: "rest", label: "Rest Day", time: "Full recovery", tag: "REST", ai: 1, note: "Muscles grow on rest days. Prioritise sleep." },
-  { day: "Friday", short: "FRI", type: "workout", label: "Full Body", time: "6:00 – 6:25am", tag: "CIRCUIT", ai: 2,
-    warmup: "3 min — light jog in place, full body circles", cooldown: "2 min — child's pose, deep breathing",
-    exercises: [{ name: "Squat to Press", sets: "4 × 10", note: "Squat down, press up as you stand" }, { name: "Push-ups", sets: "4 × 10", note: "" }, { name: "Band Deadlifts", sets: "4 × 12", note: "Stand on band, hinge and pull" }, { name: "Mountain Climbers", sets: "3 × 20 sec", note: "Core focus" }, { name: "Renegade Row", sets: "3 × 8 each", note: "Plank position, row each arm" }] },
-  { day: "Saturday", short: "SAT", type: "workout", label: "Family Walk + Core", time: "Morning with the boys", tag: "CARDIO", ai: 3,
-    warmup: "The walk IS the warmup", cooldown: "2 min — lower back stretch, seated twist",
-    exercises: [{ name: "Family Walk / Park Run", sets: "30–45 min", note: "Push the pram — extra resistance!" }, { name: "Plank Hold", sets: "3 × 30 sec", note: "Build to 60 sec over weeks" }, { name: "Dead Bug", sets: "3 × 10 each side", note: "Great for lower back" }, { name: "Russian Twists", sets: "3 × 15", note: "Light weight, focus on rotation" }] },
-  { day: "Sunday", short: "SUN", type: "rest", label: "Full Rest", time: "Family day", tag: "REST", ai: 1, note: "Recharge. Church, family time, a good meal." },
-];
+// ── Fitness Level from BMI ─────────────────────────────────────────────────────
+function getFitnessLevel(weight, height) {
+  const bmi = weight / ((height / 100) ** 2);
+  if (bmi >= 35) return "beginner";
+  if (bmi >= 28) return "intermediate";
+  return "active";
+}
 
-const MEALS = [
-  { meal: "Breakfast", time: "7:00am", goal: "High protein, quick prep", pct: 0.24,
-    ideas: ["3 scrambled eggs + wholegrain toast", "Greek yoghurt + banana + almonds", "Oats with protein powder + berries"], avoid: "Cereal, muesli bars, toast with jam only" },
-  { meal: "Morning Tea", time: "10:00am", goal: "Keep hunger at bay", pct: 0.10,
-    ideas: ["Apple + small handful of almonds", "Boiled egg + rice crackers", "Black coffee or tea"], avoid: "Biscuits, chips, sugary drinks" },
-  { meal: "Lunch", time: "12:30pm", goal: "Big, filling, protein-forward", pct: 0.30,
-    ideas: ["Chicken + brown rice + salad", "Tuna wrap with spinach + tomato", "Last night's leftovers"], avoid: "Meal deals with chips, white bread" },
-  { meal: "Afternoon Tea", time: "3:30pm", goal: "Bridge to dinner", pct: 0.10,
-    ideas: ["Piece of fruit", "Hummus + veggie sticks", "Protein shake if you trained"], avoid: "Don't skip — you'll overeat at dinner" },
-  { meal: "Dinner", time: "6:00pm", goal: "Family meal, watch portions", pct: 0.36,
-    ideas: ["Protein + lots of veggies + small carbs", "Stir-fry with lean meat over brown rice", "Bolognese with lentils — less mince, more veg"], avoid: "Seconds, kids' leftovers, large desserts" },
-];
+// ── Personalised Workout Data ─────────────────────────────────────────────────
+function buildDays(profile) {
+  const level = getFitnessLevel(profile.startWeight, profile.height || 175);
+
+  const upper = {
+    beginner: [
+      { name: "Wall Push-ups", sets: "3 × 10", note: "Easier on joints — progress to floor push-ups over time" },
+      { name: "Dumbbell Shoulder Press", sets: "3 × 10", note: "Seated, light weight" },
+      { name: "Band Rows", sets: "3 × 12", note: "Anchor band to door, focus on squeezing shoulder blades" },
+      { name: "Dumbbell Bicep Curls", sets: "3 × 10", note: "Slow on the way down" },
+      { name: "Tricep Band Pushdowns", sets: "3 × 12", note: "Keep elbows tucked" },
+    ],
+    intermediate: [
+      { name: "Push-ups", sets: "4 × 10", note: "Knees ok to start" },
+      { name: "Dumbbell Shoulder Press", sets: "3 × 12", note: "Seated or standing" },
+      { name: "Band Rows", sets: "4 × 12", note: "Anchor band to door" },
+      { name: "Dumbbell Bicep Curls", sets: "3 × 10", note: "Slow on the way down" },
+      { name: "Tricep Band Pushdowns", sets: "3 × 12", note: "" },
+    ],
+    active: [
+      { name: "Push-ups", sets: "4 × 15", note: "Add a weighted vest if too easy" },
+      { name: "Dumbbell Shoulder Press", sets: "4 × 12", note: "Standing, heavier weight" },
+      { name: "Band Rows", sets: "4 × 15", note: "Increase band resistance" },
+      { name: "Dumbbell Bicep Curls", sets: "4 × 12", note: "Superset with triceps" },
+      { name: "Tricep Dips", sets: "4 × 12", note: "Use a sturdy chair" },
+    ],
+  };
+
+  const lower = {
+    beginner: [
+      { name: "Bodyweight Squats", sets: "3 × 10", note: "Hold a wall for balance if needed" },
+      { name: "Glute Bridges", sets: "3 × 15", note: "Lie on floor, press hips up" },
+      { name: "Step-ups", sets: "3 × 8 each leg", note: "Use a low step or stair" },
+      { name: "Seated Leg Extensions", sets: "3 × 12", note: "Use a resistance band" },
+      { name: "Band Lateral Walks", sets: "3 × 10 each way", note: "Band around ankles, stay low" },
+    ],
+    intermediate: [
+      { name: "Goblet Squats", sets: "4 × 12", note: "Hold one dumbbell at chest" },
+      { name: "Romanian Deadlifts", sets: "4 × 10", note: "Hinge at hips, soft knees" },
+      { name: "Dumbbell Lunges", sets: "3 × 10 each", note: "Alternate legs" },
+      { name: "Glute Bridges", sets: "3 × 15", note: "Add dumbbell on hips for challenge" },
+      { name: "Band Lateral Walks", sets: "3 × 12 each way", note: "Band around ankles" },
+    ],
+    active: [
+      { name: "Goblet Squats", sets: "4 × 15", note: "Heavy dumbbell, full depth" },
+      { name: "Romanian Deadlifts", sets: "4 × 12", note: "Challenge the weight each week" },
+      { name: "Walking Lunges", sets: "3 × 12 each", note: "Add dumbbells for resistance" },
+      { name: "Single-leg Glute Bridge", sets: "3 × 12 each", note: "Full hip extension at top" },
+      { name: "Jump Squats", sets: "3 × 10", note: "Land softly, control the descent" },
+    ],
+  };
+
+  const fullBody = {
+    beginner: [
+      { name: "Bodyweight Squat to Press", sets: "3 × 8", note: "Light dumbbells, or just bodyweight" },
+      { name: "Incline Push-ups", sets: "3 × 10", note: "Hands on bench or step" },
+      { name: "Band Deadlifts", sets: "3 × 10", note: "Stand on band, slow and controlled" },
+      { name: "Marching in Place", sets: "3 × 30 sec", note: "High knees, keep core tight" },
+      { name: "Seated Band Rows", sets: "3 × 12", note: "Sit on floor, band around feet" },
+    ],
+    intermediate: [
+      { name: "Squat to Press", sets: "4 × 10", note: "Squat down, press up as you stand" },
+      { name: "Push-ups", sets: "4 × 10", note: "" },
+      { name: "Band Deadlifts", sets: "4 × 12", note: "Stand on band, hinge and pull" },
+      { name: "Mountain Climbers", sets: "3 × 20 sec", note: "Core focus" },
+      { name: "Renegade Row", sets: "3 × 8 each", note: "Plank position, row each arm" },
+    ],
+    active: [
+      { name: "Dumbbell Thruster", sets: "4 × 12", note: "Squat to overhead press in one fluid movement" },
+      { name: "Decline Push-ups", sets: "4 × 12", note: "Feet elevated on a chair" },
+      { name: "Dumbbell Deadlifts", sets: "4 × 12", note: "Full hip hinge, heavy" },
+      { name: "Burpees", sets: "3 × 8", note: "Full range, control the landing" },
+      { name: "Renegade Row", sets: "4 × 10 each", note: "Heavier dumbbells" },
+    ],
+  };
+
+  const l = level;
+  return [
+    { day: "Monday", short: "MON", type: "workout", label: "Upper Body", time: "6:00 – 6:25am", tag: "STRENGTH", ai: 0,
+      warmup: "3 min — arm circles, shoulder rolls, jumping jacks", cooldown: "2 min — chest stretch, band pull-apart",
+      exercises: upper[l] },
+    { day: "Tuesday", short: "TUE", type: "rest", label: "Active Rest", time: "Lunch walk", tag: "REST", ai: 1, note: "10–15 min walk at lunch. Drink extra water." },
+    { day: "Wednesday", short: "WED", type: "workout", label: "Lower Body", time: "6:00 – 6:25am", tag: "STRENGTH", ai: 0,
+      warmup: "3 min — leg swings, hip circles, bodyweight squats", cooldown: "2 min — hip flexor stretch, hamstring stretch",
+      exercises: lower[l] },
+    { day: "Thursday", short: "THU", type: "rest", label: "Rest Day", time: "Full recovery", tag: "REST", ai: 1, note: "Muscles grow on rest days. Prioritise sleep." },
+    { day: "Friday", short: "FRI", type: "workout", label: "Full Body", time: "6:00 – 6:25am", tag: "CIRCUIT", ai: 2,
+      warmup: "3 min — light jog in place, full body circles", cooldown: "2 min — child's pose, deep breathing",
+      exercises: fullBody[l] },
+    { day: "Saturday", short: "SAT", type: "workout", label: "Family Walk + Core", time: "Morning with the boys", tag: "CARDIO", ai: 3,
+      warmup: "The walk IS the warmup", cooldown: "2 min — lower back stretch, seated twist",
+      exercises: [
+        { name: "Family Walk / Park Run", sets: l === "beginner" ? "20–30 min" : l === "intermediate" ? "30–45 min" : "45–60 min", note: "Push the pram — extra resistance!" },
+        { name: "Plank Hold", sets: l === "beginner" ? "3 × 15 sec" : l === "intermediate" ? "3 × 30 sec" : "3 × 45 sec", note: "Build time each week" },
+        { name: "Dead Bug", sets: "3 × 10 each side", note: "Great for lower back" },
+        { name: "Russian Twists", sets: "3 × 15", note: "Light weight, focus on rotation" },
+      ]},
+    { day: "Sunday", short: "SUN", type: "rest", label: "Full Rest", time: "Family day", tag: "REST", ai: 1, note: "Recharge. Church, family time, a good meal." },
+  ];
+}
+
+// ── Personalised Meals ────────────────────────────────────────────────────────
+function buildMeals(plan) {
+  const cal = plan.targetCal;
+  const isLowCal = cal < 1600;
+  return [
+    { meal: "Breakfast", time: "7:00am", goal: "High protein, quick prep", pct: 0.24,
+      ideas: isLowCal
+        ? ["2 scrambled eggs + 1 slice wholegrain toast", "Overnight oats (½ cup oats) + frozen berries", "Plain yogurt (½ cup) + banana + chia seeds"]
+        : ["3 scrambled eggs + wholegrain toast + avocado", "Greek yoghurt + banana + almonds + oats", "Oats with protein powder + berries + peanut butter"],
+      avoid: "Cereal, muesli bars, toast with jam only, flavoured yogurts" },
+    { meal: "Morning Tea", time: "10:00am", goal: "Keep hunger at bay", pct: 0.10,
+      ideas: isLowCal
+        ? ["Apple or banana", "Boiled egg", "Black coffee or herbal tea"]
+        : ["Apple + 1 tbsp peanut butter", "Boiled egg + rice crackers", "Black coffee or tea"],
+      avoid: "Biscuits, chips, sugary drinks" },
+    { meal: "Lunch", time: "12:30pm", goal: "Big, filling, protein-forward", pct: 0.30,
+      ideas: isLowCal
+        ? ["Tuna + brown rice + cucumber bowl", "Lentil & veg soup + wholegrain bread", "Chickpea & spinach stew"]
+        : ["Chicken + brown rice + salad", "Tuna wrap with spinach + tomato", "Lentil soup + wholegrain roll"],
+      avoid: "Meal deals with chips, white bread, creamy sauces" },
+    { meal: "Afternoon Tea", time: "3:30pm", goal: "Bridge to dinner", pct: 0.10,
+      ideas: isLowCal
+        ? ["Carrot sticks + hummus", "Small banana", "Plain yogurt (¼ cup)"]
+        : ["Piece of fruit + small handful of nuts", "Hummus + veggie sticks", "Protein shake if you trained"],
+      avoid: "Don't skip — you'll overeat at dinner" },
+    { meal: "Dinner", time: "6:00pm", goal: "Family meal, watch portions", pct: 0.36,
+      ideas: isLowCal
+        ? ["Baked chicken thigh + roasted veg + small serve brown rice", "Lentil dahl + ½ cup brown rice", "Egg & veg frittata + side salad"]
+        : ["Protein + lots of veggies + small carbs", "Stir-fry with lean meat over brown rice", "Bolognese with lentils — less mince, more veg"],
+      avoid: "Seconds, kids' leftovers, large desserts" },
+  ];
+}
 
 const ACCENTS = ["#C8FF00", "#FF6B35", "#00D4FF", "#FF3B6B"];
 const ACCENT = "#C8FF00";
@@ -114,7 +224,6 @@ const store = {
 function todayKey() { return new Date().toISOString().slice(0, 10); }
 function dayIdxToSchedule(jsDay) { return jsDay === 0 ? 6 : jsDay - 1; }
 
-// Next fire timestamp for HH:MM in LOCAL time (today or tomorrow)
 function nextFireTs(h, m) {
   const now = new Date();
   const t = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
@@ -142,17 +251,20 @@ async function clearSWAlarms() {
   } catch {}
 }
 
-// ── Plan Calculations ─────────────────────────────────────────────────────────
+// ── Plan Calculations (uses real height & age) ─────────────────────────────────
 function calcPlan(profile) {
-  const { startWeight, goalWeight, weeklyGoal } = profile;
+  const { startWeight, goalWeight, weeklyGoal, height = 175, age = 35 } = profile;
   const tolose = startWeight - goalWeight;
   const weeks = Math.round(tolose / weeklyGoal);
-  const bmr = 88.36 + (13.4 * startWeight) + (4.8 * 175) - (5.7 * 35);
-  const tdee = Math.round(bmr * 1.2);
+  // Mifflin-St Jeor for males (most accurate for weight loss)
+  const bmr = (10 * startWeight) + (6.25 * height) - (5 * age) + 5;
+  const tdee = Math.round(bmr * 1.375); // lightly active
   const dailyDeficit = Math.round((weeklyGoal * 7700) / 7);
   const targetCal = Math.max(1500, tdee - dailyDeficit);
-  const proteinG = Math.round(startWeight * 1.6);
-  return { tolose, weeks, tdee, targetCal, proteinG, dailyDeficit };
+  const proteinG = Math.round(startWeight * 1.8); // 1.8g/kg for weight loss + muscle retention
+  const bmi = startWeight / ((height / 100) ** 2);
+  const fitnessLevel = getFitnessLevel(startWeight, height);
+  return { tolose, weeks, tdee, targetCal, proteinG, dailyDeficit, bmi: bmi.toFixed(1), fitnessLevel };
 }
 
 // ── Onboarding ────────────────────────────────────────────────────────────────
@@ -161,37 +273,62 @@ const lStyle = { fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, colo
 
 function Onboarding({ onComplete }) {
   const [step, setStep] = useState(0);
-  const [profile, setProfile] = useState({ name: "", startWeight: "", goalWeight: "", weeklyGoal: "0.5" });
+  const [profile, setProfile] = useState({ name: "", startWeight: "", goalWeight: "", weeklyGoal: "0.5", height: "", age: "" });
   const [err, setErr] = useState("");
   const upd = (k, v) => setProfile(p => ({ ...p, [k]: v }));
 
-  const plan = profile.startWeight && profile.goalWeight
-    ? calcPlan({ startWeight: parseFloat(profile.startWeight) || 90, goalWeight: parseFloat(profile.goalWeight) || 80, weeklyGoal: parseFloat(profile.weeklyGoal) || 0.5 })
+  const plan = profile.startWeight && profile.goalWeight && profile.height && profile.age
+    ? calcPlan({
+        startWeight: parseFloat(profile.startWeight) || 90,
+        goalWeight: parseFloat(profile.goalWeight) || 80,
+        weeklyGoal: parseFloat(profile.weeklyGoal) || 0.5,
+        height: parseFloat(profile.height) || 175,
+        age: parseFloat(profile.age) || 35,
+      })
     : null;
 
   const next = () => {
     if (step === 0 && !profile.name.trim()) { setErr("Enter your name"); return; }
     if (step === 1) {
       const sw = parseFloat(profile.startWeight), gw = parseFloat(profile.goalWeight);
+      const h = parseFloat(profile.height), a = parseFloat(profile.age);
       if (isNaN(sw) || sw < 40) { setErr("Enter a valid starting weight"); return; }
       if (isNaN(gw) || gw < 40) { setErr("Enter a valid goal weight"); return; }
       if (gw >= sw) { setErr("Goal weight should be less than starting weight"); return; }
+      if (isNaN(h) || h < 140 || h > 220) { setErr("Enter a valid height (140–220 cm)"); return; }
+      if (isNaN(a) || a < 16 || a > 80) { setErr("Enter a valid age"); return; }
     }
     setErr("");
     if (step < 2) { setStep(s => s + 1); return; }
-    const p = { ...profile, startWeight: parseFloat(profile.startWeight), goalWeight: parseFloat(profile.goalWeight), weeklyGoal: parseFloat(profile.weeklyGoal), createdAt: todayKey() };
+    const p = {
+      ...profile,
+      startWeight: parseFloat(profile.startWeight),
+      goalWeight: parseFloat(profile.goalWeight),
+      weeklyGoal: parseFloat(profile.weeklyGoal),
+      height: parseFloat(profile.height),
+      age: parseFloat(profile.age),
+      createdAt: todayKey(),
+    };
     store.set("profile", p);
     onComplete(p);
   };
 
+  const levelLabels = { beginner: "Beginner — Lower impact, build the base", intermediate: "Intermediate — Standard programme", active: "Active — Higher intensity & volume" };
+
   const steps = [
     { icon: "user", title: "What's your name?", subtitle: "Let's make this personal",
       content: <input autoFocus value={profile.name} onChange={e => upd("name", e.target.value)} placeholder="Your first name" onKeyDown={e => e.key === "Enter" && next()} style={iStyle} /> },
-    { icon: "target", title: "Your weight goals", subtitle: "We'll calculate everything from this",
+    { icon: "target", title: "Your body & goals", subtitle: "Used to calculate your exact calorie target",
       content: (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <div><label style={lStyle}>Current weight (kg)</label><input type="number" value={profile.startWeight} onChange={e => upd("startWeight", e.target.value)} placeholder="e.g. 98" step="0.1" style={iStyle} /></div>
-          <div><label style={lStyle}>Goal weight (kg)</label><input type="number" value={profile.goalWeight} onChange={e => upd("goalWeight", e.target.value)} placeholder="e.g. 88" step="0.1" style={iStyle} /></div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ flex: 1 }}><label style={lStyle}>Current weight (kg)</label><input type="number" value={profile.startWeight} onChange={e => upd("startWeight", e.target.value)} placeholder="e.g. 98" step="0.1" style={iStyle} /></div>
+            <div style={{ flex: 1 }}><label style={lStyle}>Goal weight (kg)</label><input type="number" value={profile.goalWeight} onChange={e => upd("goalWeight", e.target.value)} placeholder="e.g. 88" step="0.1" style={iStyle} /></div>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ flex: 1 }}><label style={lStyle}>Height (cm)</label><input type="number" value={profile.height} onChange={e => upd("height", e.target.value)} placeholder="e.g. 178" style={iStyle} /></div>
+            <div style={{ flex: 1 }}><label style={lStyle}>Age</label><input type="number" value={profile.age} onChange={e => upd("age", e.target.value)} placeholder="e.g. 34" style={iStyle} /></div>
+          </div>
           <div>
             <label style={lStyle}>Weekly loss target</label>
             <div style={{ display: "flex", gap: 8 }}>
@@ -202,13 +339,20 @@ function Onboarding({ onComplete }) {
           </div>
         </div>
       )},
-    { icon: "zap", title: "Your plan", subtitle: "Here's what we calculated",
+    { icon: "zap", title: "Your personalised plan", subtitle: "Calculated for your body — not a generic template",
       content: plan ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {[["To lose", `${plan.tolose.toFixed(1)}kg`], ["Timeline", `~${plan.weeks} weeks`], ["Daily calories", `~${plan.targetCal} kcal`], ["Daily protein", `~${plan.proteinG}g`]].map(([l, v]) => (
+          {[
+            ["To lose", `${plan.tolose.toFixed(1)}kg`],
+            ["Timeline", `~${plan.weeks} weeks`],
+            ["Daily calories", `~${plan.targetCal} kcal`],
+            ["Daily protein", `~${plan.proteinG}g`],
+            ["BMI", `${plan.bmi}`],
+            ["Workout level", levelLabels[plan.fitnessLevel]],
+          ].map(([l, v]) => (
             <div key={l} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "12px 14px", background: "var(--surface2)", borderRadius: 10 }}>
               <span style={{ fontFamily: "var(--mono)", fontSize: 11, letterSpacing: 1, color: "var(--muted)" }}>{l.toUpperCase()}</span>
-              <span style={{ fontWeight: 700, fontSize: 16, color: ACCENT }}>{v}</span>
+              <span style={{ fontWeight: 700, fontSize: 14, color: ACCENT, textAlign: "right", maxWidth: "60%" }}>{v}</span>
             </div>
           ))}
         </div>
@@ -263,6 +407,10 @@ export default function App() {
   const [importError, setImportError] = useState("");
   const [importSuccess, setImportSuccess] = useState(false);
 
+  // Build personalised data from profile
+  const DAYS = profile ? buildDays(profile) : [];
+  const MEALS = profile ? buildMeals(calcPlan(profile)) : [];
+
   const todaySchedIdx = dayIdxToSchedule(new Date().getDay());
   const todayData = DAYS[todaySchedIdx];
   const todayK = todayKey();
@@ -281,13 +429,13 @@ export default function App() {
       const d = new Date(today); d.setDate(d.getDate() - i);
       const k = d.toISOString().slice(0, 10);
       const sd = DAYS[dayIdxToSchedule(d.getDay())];
-      if (sd.type === "rest") continue;
+      if (!sd || sd.type === "rest") continue;
       if (completedDays[k]) s++;
       else if (i > 0) break;
     }
     setStreak(s);
     setTotalWorkouts(Object.values(completedDays).filter(Boolean).length);
-  }, [completedDays]);
+  }, [completedDays]); // eslint-disable-line
 
   const markDone = useCallback(() => {
     const u = { ...completedDays, [todayK]: true };
@@ -299,7 +447,6 @@ export default function App() {
     setCompletedDays(u); store.set("completedDays", u);
   }, [completedDays, todayK]);
 
-  // ── Alarm builder ─────────────────────────────────────────────────────────
   const MISSED_QUOTES = [
     { t: "You missed yesterday.", b: `No excuses, ${profile?.name || "Dad"}. Get back on it today.` },
     { t: "The gym didn't miss you.", b: "But your future self did. Don't skip again." },
@@ -311,17 +458,14 @@ export default function App() {
   const buildAndSendAlarms = useCallback((workoutTimeStr, includeWater, wTimes) => {
     const [wh, wm] = workoutTimeStr.split(":").map(Number);
     const todaySched = DAYS[dayIdxToSchedule(new Date().getDay())];
-    const isWorkout = todaySched.type === "workout";
+    const isWorkout = todaySched?.type === "workout";
     const mq = MISSED_QUOTES[Math.floor(Math.random() * MISSED_QUOTES.length)];
-
     const alarms = [
       { id: "workout", fireAt: nextFireTs(wh, wm), repeat: "daily",
         title: isWorkout ? `Time to train, ${profile?.name || "Dad"}!` : "Active rest day",
         body: isWorkout ? `${todaySched.label} — 25 mins. Get it done.` : "A short walk keeps the momentum going." },
-      { id: "missed", fireAt: nextFireTs(20, 0), repeat: "daily", missedOnly: true,
-        title: mq.t, body: mq.b },
+      { id: "missed", fireAt: nextFireTs(20, 0), repeat: "daily", missedOnly: true, title: mq.t, body: mq.b },
     ];
-
     if (includeWater) {
       (wTimes || waterTimes).forEach(wt => {
         const [h, m] = wt.time.split(":").map(Number);
@@ -330,7 +474,6 @@ export default function App() {
         alarms.push({ id: `water-${wt.id}`, fireAt: nextFireTs(h, m), repeat: "daily", title, body });
       });
     }
-
     sendAlarmsToSW(alarms);
   }, [profile, waterTimes]); // eslint-disable-line
 
@@ -348,30 +491,25 @@ export default function App() {
     else clearSWAlarms();
   };
 
-  // Re-send to SW every app open
   useEffect(() => {
     if (notifPerm === "granted" && (notifEnabled || waterEnabled)) buildAndSendAlarms(notifTime, waterEnabled, waterTimes);
   }, []); // eslint-disable-line
 
-  // ── Water time management ─────────────────────────────────────────────────
   const updateWaterTime = (id, newTime) => {
     const updated = waterTimes.map(w => w.id === id ? { ...w, time: newTime } : w);
     setWaterTimes(updated); store.set("waterTimes", updated);
     if (waterEnabled) buildAndSendAlarms(notifTime, true, updated);
   };
-
   const updateWaterLabel = (id, newLabel) => {
     const updated = waterTimes.map(w => w.id === id ? { ...w, label: newLabel } : w);
     setWaterTimes(updated); store.set("waterTimes", updated);
   };
-
   const addWaterTime = () => {
     const newId = Math.max(0, ...waterTimes.map(w => w.id)) + 1;
     const updated = [...waterTimes, { id: newId, time: "09:00", label: "Custom" }].sort((a, b) => a.time.localeCompare(b.time));
     setWaterTimes(updated); store.set("waterTimes", updated);
     if (waterEnabled) buildAndSendAlarms(notifTime, true, updated);
   };
-
   const removeWaterTime = (id) => {
     if (waterTimes.length <= 1) return;
     const updated = waterTimes.filter(w => w.id !== id);
@@ -379,11 +517,10 @@ export default function App() {
     if (waterEnabled) buildAndSendAlarms(notifTime, true, updated);
   };
 
-  // ── Export / Import ───────────────────────────────────────────────────────
   const exportData = () => {
     const data = { v: 1, profile: store.get("profile"), completedDays: store.get("completedDays", {}), weights: store.get("weights", []), notifTime: store.get("notifTime", "05:55"), notifEnabled: store.get("notifEnabled", false), waterEnabled: store.get("waterEnabled", false), waterTimes: store.get("waterTimes", DEFAULT_WATER_TIMES), exportedAt: new Date().toISOString() };
     const str = btoa(JSON.stringify(data));
-    navigator.clipboard?.writeText(str).then(() => alert("Backup code copied to clipboard!\n\nSave it in your Notes app or email it to yourself. Paste it into the Import field on your new install.")).catch(() => prompt("Copy this backup code:", str));
+    navigator.clipboard?.writeText(str).then(() => alert("Backup code copied to clipboard!\n\nSave it in your Notes app or email it to yourself.")).catch(() => prompt("Copy this backup code:", str));
   };
 
   const importData = () => {
@@ -398,6 +535,9 @@ export default function App() {
   };
 
   const streakLabel = streak === 0 ? "Start today" : streak < 4 ? "Building momentum" : streak < 8 ? "On a roll" : streak < 12 ? "Unstoppable" : "Legend status";
+
+  const levelBadgeColor = { beginner: "#FF6B35", intermediate: "#C8FF00", active: "#00D4FF" };
+  const levelLabel = { beginner: "BEGINNER", intermediate: "INTERMEDIATE", active: "ACTIVE" };
 
   const CSS = `
     :root { --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2a2a2a;--text:#f0f0f0;--muted:#666;--accent:#C8FF00;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace; }
@@ -421,7 +561,10 @@ export default function App() {
         <div style={{ background: "var(--bg)", padding: "max(env(safe-area-inset-top),20px) 20px 0", borderBottom: "1px solid var(--border)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", paddingBottom: 20 }}>
             <div>
-              <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 3, color: "var(--muted)", marginBottom: 4 }}>DADFIT · {profile.name.toUpperCase()}</div>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 3, color: "var(--muted)" }}>DADFIT · {profile.name.toUpperCase()}</div>
+                <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1, color: levelBadgeColor[plan.fitnessLevel], background: levelBadgeColor[plan.fitnessLevel] + "20", padding: "2px 7px", borderRadius: 4 }}>{levelLabel[plan.fitnessLevel]}</div>
+              </div>
               <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1 }}>
                 {lost > 0 ? <><span style={{ color: "var(--accent)" }}>{lost.toFixed(1)}kg</span> down</> : `Hey ${profile.name}`}
               </div>
@@ -492,6 +635,12 @@ export default function App() {
           {/* SCHEDULE */}
           {tab === "schedule" && (
             <div>
+              <div style={{ background: "var(--surface)", borderRadius: 12, padding: "10px 14px", marginBottom: 16, border: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{ width: 8, height: 8, borderRadius: 4, background: levelBadgeColor[plan.fitnessLevel] }} />
+                <div style={{ fontSize: 13, color: "var(--muted)" }}>
+                  Workouts set to <span style={{ color: levelBadgeColor[plan.fitnessLevel], fontWeight: 600 }}>{levelLabel[plan.fitnessLevel]}</span> level based on your BMI of {plan.bmi}
+                </div>
+              </div>
               <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)", marginBottom: 16 }}>THIS WEEK</div>
               {DAYS.map((d, i) => {
                 const today = new Date(), currIdx = dayIdxToSchedule(today.getDay());
@@ -538,7 +687,7 @@ export default function App() {
             <div>
               <a href="/diet-plan.html" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#C8FF0012", borderRadius: 14, padding: "14px 16px", marginBottom: 12, border: "1px solid #C8FF0030", textDecoration: "none", cursor: "pointer" }}>
                 <div>
-                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "#C8FF00", marginBottom: 4 }}>NEW</div>
+                  <div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "#C8FF00", marginBottom: 4 }}>FULL PLAN</div>
                   <div style={{ fontWeight: 700, fontSize: 15, color: "var(--text)" }}>Budget Diet Plan</div>
                   <div style={{ fontSize: 12, color: "var(--muted)", marginTop: 2 }}>Low-sodium · Weight loss · ~$6/day</div>
                 </div>
@@ -649,17 +798,28 @@ export default function App() {
           {/* SETTINGS */}
           {tab === "settings" && (
             <div>
-              {/* Profile */}
               <div style={{ background: "var(--surface)", borderRadius: 14, padding: 16, marginBottom: 12, border: "1px solid var(--border)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10 }}><Icon name="user" size={18} color="var(--accent)" /><div style={{ fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 2, color: "var(--muted)" }}>YOUR PROFILE</div></div>
                   <button onClick={() => setEditingProfile(true)} style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid var(--border)", borderRadius: 8, padding: "6px 12px", color: "var(--muted)", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 10, letterSpacing: 1 }}><Icon name="edit" size={13} color="var(--muted)" /> EDIT</button>
                 </div>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                  {[["Name", profile.name], ["Start", `${profile.startWeight}kg`], ["Goal", `${profile.goalWeight}kg`], ["Rate", `${profile.weeklyGoal}kg/wk`], ["Timeline", `~${plan.weeks} wks`], ["Calories", `~${plan.targetCal}`]].map(([l, v]) => (
+                  {[
+                    ["Name", profile.name],
+                    ["Start", `${profile.startWeight}kg`],
+                    ["Goal", `${profile.goalWeight}kg`],
+                    ["Height", `${profile.height || "—"}cm`],
+                    ["Age", `${profile.age || "—"}`],
+                    ["Rate", `${profile.weeklyGoal}kg/wk`],
+                    ["BMI", plan.bmi],
+                    ["Level", levelLabel[plan.fitnessLevel]],
+                    ["Timeline", `~${plan.weeks} wks`],
+                    ["Calories", `~${plan.targetCal}`],
+                    ["Protein", `~${plan.proteinG}g`],
+                  ].map(([l, v]) => (
                     <div key={l} style={{ background: "var(--surface2)", borderRadius: 8, padding: "8px 12px", minWidth: "calc(33% - 6px)" }}>
                       <div style={{ fontFamily: "var(--mono)", fontSize: 9, letterSpacing: 1, color: "var(--muted)" }}>{l.toUpperCase()}</div>
-                      <div style={{ fontWeight: 600, fontSize: 14, marginTop: 2, color: "var(--accent)" }}>{v}</div>
+                      <div style={{ fontWeight: 600, fontSize: 13, marginTop: 2, color: "var(--accent)" }}>{v}</div>
                     </div>
                   ))}
                 </div>
@@ -693,30 +853,17 @@ export default function App() {
                     <Icon name="plus" size={13} color="#00D4FF" strokeWidth={2} /> ADD
                   </button>
                 </div>
-
-                {/* Editable reminder list */}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 14 }}>
                   {waterTimes.sort((a, b) => a.time.localeCompare(b.time)).map(wt => (
                     <div key={wt.id} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 12px", background: "var(--surface2)", borderRadius: 10 }}>
-                      <input
-                        value={wt.label}
-                        onChange={e => updateWaterLabel(wt.id, e.target.value)}
-                        style={{ flex: 1, background: "none", border: "none", color: "var(--text)", fontSize: 13, fontWeight: 600, outline: "none", fontFamily: "var(--font)", minWidth: 0 }}
-                        maxLength={12}
-                      />
-                      <input
-                        type="time"
-                        value={wt.time}
-                        onChange={e => updateWaterTime(wt.id, e.target.value)}
-                        style={{ padding: "6px 8px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "#00D4FF", fontSize: 13, outline: "none", fontFamily: "var(--mono)", flexShrink: 0 }}
-                      />
+                      <input value={wt.label} onChange={e => updateWaterLabel(wt.id, e.target.value)} style={{ flex: 1, background: "none", border: "none", color: "var(--text)", fontSize: 13, fontWeight: 600, outline: "none", fontFamily: "var(--font)", minWidth: 0 }} maxLength={12} />
+                      <input type="time" value={wt.time} onChange={e => updateWaterTime(wt.id, e.target.value)} style={{ padding: "6px 8px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--bg)", color: "#00D4FF", fontSize: 13, outline: "none", fontFamily: "var(--mono)", flexShrink: 0 }} />
                       <button onClick={() => removeWaterTime(wt.id)} disabled={waterTimes.length <= 1} style={{ background: "none", border: "none", cursor: waterTimes.length <= 1 ? "default" : "pointer", color: waterTimes.length <= 1 ? "var(--border)" : "#FF3B6B", padding: 4, flexShrink: 0, display: "flex" }}>
                         <Icon name="minus" size={16} color={waterTimes.length <= 1 ? "var(--border)" : "#FF3B6B"} strokeWidth={2} />
                       </button>
                     </div>
                   ))}
                 </div>
-
                 <button onClick={toggleWater} style={{ width: "100%", padding: "13px", borderRadius: 12, background: waterEnabled ? "var(--surface2)" : "#00D4FF15", color: waterEnabled ? "var(--muted)" : "#00D4FF", cursor: "pointer", fontFamily: "var(--mono)", fontSize: 12, fontWeight: 600, letterSpacing: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, border: waterEnabled ? "1px solid var(--border)" : "1px solid #00D4FF40" }}>
                   <Icon name="droplet" size={15} color={waterEnabled ? "var(--muted)" : "#00D4FF"} />
                   {waterEnabled ? `WATER REMINDERS ON (${waterTimes.length}) — TAP TO DISABLE` : `ENABLE WATER REMINDERS (${waterTimes.length})`}
